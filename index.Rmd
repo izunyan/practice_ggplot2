@@ -1,0 +1,143 @@
+---
+title: "ggplot2の辞書"
+author: "izunyan"
+date: "`r format(Sys.time(), '%Y/%m/%d')`"
+output: 
+  html_document: 
+    toc: TRUE
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+
+# 散布図
+## デフォルトの図
+```{r}
+p <- 
+ggplot(iris, aes(Sepal.Length, Petal.Length)) +
+  geom_point()
+
+p 
+```
+
+## タイトルと軸
+```{r}
+p +
+  labs(
+    title = "タイトル",
+    subtitle = "サブタイトル",
+    caption = "キャプション(短い説明文）"
+       )
+```
+
+### 軸の名前
+```{r}
+p +
+  labs(
+    x = "x軸の名前",
+    y = "y軸の名前"
+       )
+```
+
+
+### 軸の数値の調整
+#### 数値範囲確認
+```{r}
+summary(iris)
+```
+
+#### 範囲を指定して１ずつ増やす
+
+* 数値型の場合は、`scale_x_continuous()`のbreaksで指定
+* 表示範囲を強制指定する場合は`limits =` 
+
+```{r}
+p +
+  scale_x_continuous(
+    breaks = seq(from = 4, to = 8, by = 1), # 4から8まで1ずつ増える
+    limits = c(4, 8)) +                     # 4を表示したい場合
+  scale_y_continuous(
+    breaks = seq(from = 1, to = 7, by = 1)) # 1から7まで1ずつ増える
+```
+
+
+##### 手動で指定
+```{r}
+p +
+  scale_y_continuous(
+    breaks = c(1, 4.5, 7))       
+```
+
+## グラフ中に線やテキストを追加
+### 横線
+```{r}
+p +
+  geom_hline(yintercept = 2.5,
+             linetype = "dotted",
+             color = "red",
+             size = 1)
+
+```
+
+### 縦線
+```{r}
+p +
+  geom_vline(xintercept = 5.5,
+             linetype = "dotted",
+             color = "red",
+             size = 1)
+
+```
+
+### テキスト
+```{r}
+p +
+  annotate("text",
+           x = 7, y =3,  # テキストの中心座標位置
+           label = "ここにテキスト",
+           color = "blue",
+           size = 10)
+```
+
+
+## 色分け
+```{r}
+pc <- 
+ggplot(iris) +
+  geom_point(aes(Sepal.Length, Petal.Length,
+                 color = Species))
+
+pc 
+```
+### 色の指定
+```{r}
+pc +
+  scale_color_manual(values = c("red", "green", "blue"))
+```
+
+#### 凡例の名前変更
+```{r}
+pc +
+  scale_color_manual(values = c("red", "green", "blue"),
+                     labels = c("赤", "緑", "青"))
+```
+
+
+
+
+## グラフを個別に
+```{r}
+pc +
+  facet_wrap(vars(Species))
+```
+
