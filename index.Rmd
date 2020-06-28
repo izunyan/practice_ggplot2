@@ -1,6 +1,6 @@
 ---
 title: "ggplot2の辞書"
-author: "izunyan"
+author: ""
 date: "`r format(Sys.time(), '%Y/%m/%d')`"
 output: 
   html_document: 
@@ -20,17 +20,26 @@ library(tidyverse)
 ```
 
 
-# 散布図
+# 散布図: geom_point()
 ## デフォルトの図
+
+* R for Data Scienceにならって、mpgデータを使用  
+  + https://r4ds.had.co.nz/data-visualisation.html#first-steps  
+* mpgデータ  
+  + 車の人気モデル38種類における燃料効率データ（1999-2008年）
+* 使用変数の説明
+  + `displ`: エンジンの排気量（リットル）  
+  + `hwy`:   燃料効率（miles per gallon[mpg]）
+  
 ```{r}
 p <- 
-ggplot(iris, aes(Sepal.Length, Petal.Length)) +
+ggplot(mpg, aes(displ,hwy)) +
   geom_point()
-
 p 
 ```
 
-## タイトルと軸
+## タイトルと軸: labs()
+### タイトル
 ```{r}
 p +
   labs(
@@ -50,13 +59,15 @@ p +
 ```
 
 
-### 軸の数値の調整
-#### 数値範囲確認
+## 軸の数値範囲: scale_*_continuous
+### 数値範囲確認
 ```{r}
-summary(iris)
+mpg %>% 
+  select(displ, hwy) %>% 
+  summary()
 ```
 
-#### 範囲を指定して１ずつ増やす
+### 範囲を指定して１ずつ増やす
 
 * 数値型の場合は、`scale_x_continuous()`のbreaksで指定
 * 表示範囲を強制指定する場合は`limits =` 
@@ -64,46 +75,47 @@ summary(iris)
 ```{r}
 p +
   scale_x_continuous(
-    breaks = seq(from = 4, to = 8, by = 1), # 4から8まで1ずつ増える
-    limits = c(4, 8)) +                     # 4を表示したい場合
+    breaks = seq(from = 1, to = 8, by = 1), # 1から8まで1ずつ増える
+    limits = c(1, 8)) +                     # 1を表示したい場合
   scale_y_continuous(
-    breaks = seq(from = 1, to = 7, by = 1)) # 1から7まで1ずつ増える
+    breaks = seq(from = 10, to = 45, by = 5), # 10から45まで5ずつ増える
+    limits = c(10, 45))
 ```
 
 
-##### 手動で指定
+#### 手動で指定
 ```{r}
 p +
   scale_y_continuous(
-    breaks = c(1, 4.5, 7))       
+    breaks = c(15, 30, 45))       
 ```
 
 ## グラフ中に線やテキストを追加
-### 横線
+### 横線: geom_hline()
 ```{r}
 p +
-  geom_hline(yintercept = 2.5,
+  geom_hline(yintercept = 30,
              linetype = "dotted",
              color = "red",
              size = 1)
 
 ```
 
-### 縦線
+### 縦線:geom_vline()
 ```{r}
 p +
-  geom_vline(xintercept = 5.5,
+  geom_vline(xintercept = 5,
              linetype = "dotted",
              color = "red",
              size = 1)
 
 ```
 
-### テキスト
+### テキスト: annotate()
 ```{r}
 p +
   annotate("text",
-           x = 7, y =3,  # テキストの中心座標位置
+           x = 5, y = 35,  # テキストの中心座標位置
            label = "ここにテキスト",
            color = "blue",
            size = 10)
@@ -111,33 +123,48 @@ p +
 
 
 ## 色分け
+
+* 使用変数の説明
+  + class: 車種
+
 ```{r}
 pc <- 
-ggplot(iris) +
-  geom_point(aes(Sepal.Length, Petal.Length,
-                 color = Species))
+ggplot(mpg) +
+  geom_point(aes(displ, hwy,
+                 color = class))
 
 pc 
 ```
-### 色の指定
+### 色を手動で指定
 ```{r}
 pc +
-  scale_color_manual(values = c("red", "green", "blue"))
+  scale_color_manual(values = c("red", "green", "blue", "yellow", "pink", "black", "brown"))
 ```
+
 
 #### 凡例の名前変更
 ```{r}
 pc +
-  scale_color_manual(values = c("red", "green", "blue"),
-                     labels = c("赤", "緑", "青"))
+  scale_color_manual(values = c("red", "green", "blue", "yellow", "pink", "black", "brown"),
+                     labels = c("二人乗り","小型","中型","ミニバン","貨物","サブコンパクト","SUV"))
 ```
 
 
 
 
-## グラフを個別に
+## グラフを個別に1枚にまとめて表示: facet_wrap()
 ```{r}
 pc +
-  facet_wrap(vars(Species))
+  facet_wrap(vars(class))
 ```
 
+### 並べ方指定
+
+* 列数： ncol = 数字
+* 行数： nrow = 数字
+
+```{r}
+pc +
+  facet_wrap(vars(class),
+             ncol = 2)
+```
