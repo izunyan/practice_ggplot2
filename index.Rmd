@@ -59,7 +59,7 @@ p +
 ```
 
 
-## 軸の数値範囲: scale_*_continuous
+## 軸の数値範囲: scale_continuous()  
 ### 数値範囲確認
 ```{r}
 mpg %>% 
@@ -69,7 +69,7 @@ mpg %>%
 
 ### 範囲を指定して１ずつ増やす
 
-* 数値型の場合は、`scale_x_continuous()`のbreaksで指定
+* 数値型の場合は、`scale_x_continuous()`および`scale_y_continuous()`のbreaksで指定
 * 表示範囲を強制指定する場合は`limits =` 
 
 ```{r}
@@ -125,7 +125,7 @@ p +
 ## 色分け
 
 * 使用変数の説明
-  + class: 車種
+  + `class`: 車種
 
 ```{r}
 pc <- 
@@ -135,6 +135,7 @@ ggplot(mpg) +
 
 pc 
 ```
+
 ### 色を手動で指定
 ```{r}
 pc +
@@ -152,7 +153,7 @@ pc +
 
 
 
-## グラフを個別に1枚にまとめて表示: facet_wrap()
+## 変数の水準ごとにプロット: facet_wrap()
 ```{r}
 pc +
   facet_wrap(vars(class))
