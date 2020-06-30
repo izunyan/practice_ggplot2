@@ -15,9 +15,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 
-```{r}
-library(tidyverse)
-```
+# 辞書作成進捗
+
+* 初期状態 16チャンク(内非グラフ部分2チャンク)  
+* 追加予定 `r 41+12*2`チャンク (2020/06/30 現在)
+* 追加完了  2  チャンク (`r format(Sys.time(), '%Y/%m/%d')`現在)
 
 
 # 散布図: geom_point()
@@ -30,10 +32,14 @@ library(tidyverse)
 * 使用変数の説明
   + `displ`: エンジンの排気量（リットル）  
   + `hwy`:   燃料効率（miles per gallon[mpg]）
-  
+
+```{r}
+library(tidyverse)
+```
+
 ```{r}
 p <- 
-ggplot(mpg, aes(displ,hwy)) +
+ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point()
 p 
 ```
@@ -119,6 +125,18 @@ p +
            label = "ここにテキスト",
            color = "blue",
            size = 10)
+```
+
+## 背景の色や線のテンプレート変更 
+
+```{r}
+p +
+  theme_bw()
+```
+
+```{r}
+p +
+  theme_classic()
 ```
 
 
