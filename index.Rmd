@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 * 初期状態 16チャンク(内非グラフ部分2チャンク)  
 * 追加予定 `r 41+12*2`チャンク (2020/06/30 現在)
-* 追加完了  2  チャンク (`r format(Sys.time(), '%Y/%m/%d')`現在)
+* 追加完了  4 チャンク (`r format(Sys.time(), '%Y/%m/%d')`現在)
 
 
 # 散布図: geom_point()
@@ -169,6 +169,25 @@ pc +
 ```
 
 
+## 凡例の調整
+### 凡例の位置
+```{r}
+pc +
+ theme(legend.position = "bottom")
+
+```
+
+### 凡例をグラフ中に
+
+* `legend.position =` で、x軸、y軸のそれぞれを0-1の範囲で表した相対的な位置の座標で表す
+* `legend.direction = "horizontal"`で、凡例を横向きに展開
+
+```{r}
+pc +
+ theme(legend.position = c(.70, .80),
+       legend.direction = "horizontal")
+
+```
 
 
 ## 変数の水準ごとにプロット: facet_wrap()
