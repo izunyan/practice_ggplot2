@@ -1,6 +1,6 @@
 ---
 title: "ggplot2の辞書"
-author: ""
+author: "やわらかクジラ"
 date: "`r format(Sys.time(), '%Y/%m/%d')`"
 output: 
   html_document: 
@@ -17,12 +17,13 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # 辞書作成進捗
 
-* 初期状態 16チャンク(内非グラフ部分2チャンク)  
-* 追加予定 `r 41+12*2`チャンク (2020/06/30 現在)
-* 追加完了  4 チャンク (`r format(Sys.time(), '%Y/%m/%d')`現在)
+* 初期状態: 16チャンク(内非グラフ部分2チャンク)  
+* 完了/追加予定  **10/`r 41+12*2`**チャンク  
+  + 追加予定数は2020/06/30 現在
 
 
-# 散布図: geom_point()
+
+# 散布図(1): geom_point()
 ## デフォルトの図
 
 * R for Data Scienceにならって、mpgデータを使用  
@@ -55,6 +56,37 @@ p +
        )
 ```
 
+#### タイトルの文字サイズ変更
+```{r}
+p +
+  labs(
+    title = "タイトル",
+    subtitle = "サブタイトル",
+    caption = "キャプション(短い説明文）"
+       ) +
+  theme(
+    plot.title    = element_text(size = 30),
+    plot.subtitle = element_text(size = 20),
+    plot.caption  = element_text(size = 15)
+  )
+```
+
+#### タイトルの位置変更
+```{r}
+p +
+  labs(
+    title = "タイトル",
+    subtitle = "サブタイトル",
+    caption = "キャプション(短い説明文）"
+       ) +
+  theme(
+    plot.title    = element_text(hjust = 0.5),   # 水平方向0-1の範囲で相対的な位置を指定
+    plot.subtitle    = element_text(hjust = 0.5),
+    plot.caption  = element_text(hjust = 0)
+  )
+```
+
+
 ### 軸の名前
 ```{r}
 p +
@@ -69,7 +101,7 @@ p +
 ### 数値範囲確認
 ```{r}
 mpg %>% 
-  select(displ, hwy) %>% 
+  select(displ, hwy) %>% # displとhwyを選んでsummary()に渡す
   summary()
 ```
 
@@ -96,14 +128,28 @@ p +
     breaks = c(15, 30, 45))       
 ```
 
+## 軸の数値のサイズ
+```{r}
+p +
+  theme(axis.text = element_text(size = 9)) # 単位はpt
+
+p +
+  theme(axis.text = element_text(size = 12)) # 単位はpt
+
+p +
+  theme(axis.text = element_text(size = 16)) # 単位はpt
+
+```
+
+
 ## グラフ中に線やテキストを追加
 ### 横線: geom_hline()
 ```{r}
 p +
-  geom_hline(yintercept = 30,
-             linetype = "dotted",
-             color = "red",
-             size = 1)
+  geom_hline(yintercept = 30,     # 座標の位置
+             linetype = "dotted", # 点線
+             color = "red",       # 色
+             size = 1)            # 大きさ
 
 ```
 
@@ -120,12 +166,31 @@ p +
 ### テキスト: annotate()
 ```{r}
 p +
-  annotate("text",
+  annotate(geom = "text",
            x = 5, y = 35,  # テキストの中心座標位置
            label = "ここにテキスト",
            color = "blue",
            size = 10)
 ```
+
+#### 相関係数を入れる
+
+
+```{r}
+# 相関係数の計算
+corc <- 
+  cor(mpg$displ, mpg$hwy) %>% 
+  round(2)
+ 
+p +
+  annotate("text",
+           label = str_c("r = ", corc), # 相関係数の代入 
+           x = 6, y = 40,
+           size = 6)
+  
+```
+
+
 
 ## 背景の色や線のテンプレート変更 
 
@@ -139,7 +204,7 @@ p +
   theme_classic()
 ```
 
-
+# 散布図(2)
 ## 色分け
 
 * 使用変数の説明
@@ -177,6 +242,13 @@ pc +
 
 ```
 
+### 凡例を消す
+```{r}
+pc +
+ theme(legend.position = "none")
+
+```
+
 ### 凡例をグラフ中に
 
 * `legend.position =` で、x軸、y軸のそれぞれを0-1の範囲で表した相対的な位置の座標で表す
@@ -188,6 +260,15 @@ pc +
        legend.direction = "horizontal")
 
 ```
+### 凡例の並べ方指定
+```{r}
+pc +
+ theme(legend.position = "bottom") +
+ guides(color = guide_legend(nrow = 1))  
+
+```
+
+
 
 
 ## 変数の水準ごとにプロット: facet_wrap()
