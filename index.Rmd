@@ -18,12 +18,12 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **10/`r 41+12*2`**チャンク  
-  + 追加予定数は2020/06/30 現在
+* 完了/追加予定  **13/`r 43+14*2`**チャンク  
+  + 追加予定数は2020/07/03 現在
 
 
 
-# 散布図(1): geom_point()
+# 散布図(1): 2変数のみ
 ## デフォルトの図
 
 * R for Data Scienceにならって、mpgデータを使用  
@@ -40,15 +40,39 @@ library(tidyverse)
 
 ```{r}
 p <- 
-ggplot(mpg, aes(x = displ, y = hwy)) +
-  geom_point()
-p 
+ggplot(mpg, aes(x = displ, y = hwy))
+
+p + geom_point() 
 ```
+
+## 点の書式
+### 色
+```{r}
+p +
+  geom_point(color = "deepskyblue3") 
+```
+
+### 大きさ
+
+
+```{r}
+p +
+  geom_point(size = 3) 
+```
+
+### 濃さ（透明度）
+```{r}
+p +
+  geom_point(alpha = 0.1) 
+```
+
+
 
 ## タイトルと軸: labs()
 ### タイトル
 ```{r}
 p +
+  geom_point() +
   labs(
     title = "タイトル",
     subtitle = "サブタイトル",
@@ -59,6 +83,7 @@ p +
 #### タイトルの文字サイズ変更
 ```{r}
 p +
+  geom_point() +
   labs(
     title = "タイトル",
     subtitle = "サブタイトル",
@@ -74,6 +99,7 @@ p +
 #### タイトルの位置変更
 ```{r}
 p +
+  geom_point() +
   labs(
     title = "タイトル",
     subtitle = "サブタイトル",
@@ -90,6 +116,7 @@ p +
 ### 軸の名前
 ```{r}
 p +
+  geom_point() +
   labs(
     x = "x軸の名前",
     y = "y軸の名前"
@@ -112,6 +139,7 @@ mpg %>%
 
 ```{r}
 p +
+  geom_point() +
   scale_x_continuous(
     breaks = seq(from = 1, to = 8, by = 1), # 1から8まで1ずつ増える
     limits = c(1, 8)) +                     # 1を表示したい場合
@@ -124,6 +152,7 @@ p +
 #### 手動で指定
 ```{r}
 p +
+  geom_point() +
   scale_y_continuous(
     breaks = c(15, 30, 45))       
 ```
@@ -131,12 +160,15 @@ p +
 ## 軸の数値のサイズ
 ```{r}
 p +
+  geom_point() +
   theme(axis.text = element_text(size = 9)) # 単位はpt
 
-p +
+p + 
+  geom_point() +
   theme(axis.text = element_text(size = 12)) # 単位はpt
 
 p +
+  geom_point() +
   theme(axis.text = element_text(size = 16)) # 単位はpt
 
 ```
@@ -145,7 +177,8 @@ p +
 ## グラフ中に線やテキストを追加
 ### 横線: geom_hline()
 ```{r}
-p +
+p + 
+  geom_point() +
   geom_hline(yintercept = 30,     # 座標の位置
              linetype = "dotted", # 点線
              color = "red",       # 色
@@ -156,6 +189,7 @@ p +
 ### 縦線:geom_vline()
 ```{r}
 p +
+  geom_point() +
   geom_vline(xintercept = 5,
              linetype = "dotted",
              color = "red",
@@ -166,6 +200,7 @@ p +
 ### テキスト: annotate()
 ```{r}
 p +
+  geom_point() +
   annotate(geom = "text",
            x = 5, y = 35,  # テキストの中心座標位置
            label = "ここにテキスト",
@@ -183,6 +218,7 @@ corc <-
   round(2)
  
 p +
+  geom_point() +
   annotate("text",
            label = str_c("r = ", corc), # 相関係数の代入 
            x = 6, y = 40,
@@ -195,16 +231,18 @@ p +
 ## 背景の色や線のテンプレート変更 
 
 ```{r}
-p +
+p + 
+  geom_point() +
   theme_bw()
 ```
 
 ```{r}
 p +
+  geom_point() +
   theme_classic()
 ```
 
-# 散布図(2)
+# 散布図(2):3変数以上
 ## 色分け
 
 * 使用変数の説明
@@ -260,6 +298,7 @@ pc +
        legend.direction = "horizontal")
 
 ```
+
 ### 凡例の並べ方指定
 ```{r}
 pc +
