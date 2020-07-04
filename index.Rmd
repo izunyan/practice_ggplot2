@@ -18,11 +18,27 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **13/`r 43+14*2`**チャンク  
+* 完了/追加予定  **24/`r 43+14*2`**チャンク  
   + 追加予定数は2020/07/03 現在
 
 
+# 辞書の説明
 
+## 概要
+
+* データの可視化と細かい部分の微調整をするための備忘録
+* 気になる用語や関数について`ctrl + F`で検索
+
+## 参考情報
+* [公式のレファレンス](https://ggplot2.tidyverse.org/reference/index.html)
+   + 各関数と引数の意味がグラフ付きで解説されている
+
+* [ggplot2: Elegant Graphics for Data Analysis](https://ggplot2-book.org/)
+  + by Hadley Wickham
+  
+* [R Graphics Cookbook, 2nd edition](https://r-graphics.org/)
+  + by Winston Chang
+   
 # 散布図(1): 2変数のみ
 ## デフォルトの図
 
@@ -114,6 +130,9 @@ p +
 
 
 ### 軸の名前
+
+* 名前を消したいときは `x = ""`のようにしてもできる
+
 ```{r}
 p +
   geom_point() +
@@ -250,16 +269,16 @@ p +
 
 ```{r}
 pc <- 
-ggplot(mpg) +
-  geom_point(aes(displ, hwy,
-                 color = class))
+ggplot(mpg, aes(displ, hwy,
+                color = class))
 
-pc 
+pc + geom_point()
 ```
 
 ### 色を手動で指定
 ```{r}
 pc +
+  geom_point() +
   scale_color_manual(values = c("red", "green", "blue", "yellow", "pink", "black", "brown"))
 ```
 
@@ -267,6 +286,7 @@ pc +
 #### 凡例の名前変更
 ```{r}
 pc +
+  geom_point() +
   scale_color_manual(values = c("red", "green", "blue", "yellow", "pink", "black", "brown"),
                      labels = c("二人乗り","小型","中型","ミニバン","貨物","サブコンパクト","SUV"))
 ```
@@ -276,6 +296,7 @@ pc +
 ### 凡例の位置
 ```{r}
 pc +
+ geom_point() +
  theme(legend.position = "bottom")
 
 ```
@@ -283,6 +304,7 @@ pc +
 ### 凡例を消す
 ```{r}
 pc +
+ geom_point() +
  theme(legend.position = "none")
 
 ```
@@ -294,26 +316,86 @@ pc +
 
 ```{r}
 pc +
+ geom_point() +
  theme(legend.position = c(.70, .80),
        legend.direction = "horizontal")
 
 ```
 
-### 凡例の並べ方指定
+### 凡例の行数や列数指定
 ```{r}
 pc +
+ geom_point() +
  theme(legend.position = "bottom") +
  guides(color = guide_legend(nrow = 1))  
 
 ```
 
+### 凡例の順序を逆に
+```{r}
+pc +
+ geom_point() +
+ guides(color = guide_legend(reverse = TRUE))
+```
 
+### 凡例の順序を任意に
+```{r}
+# class別のエンジンの排気量平均を確認して並び替え
+mpg %>% 
+  group_by(class) %>%
+  summarise(mean_hwy = mean(hwy)) %>% 
+  arrange(mean_hwy)
+
+pc +
+ geom_point() +
+  scale_color_discrete(breaks =                       # 色分けをcolorでやっているのでscale_color
+                        c("pickup", "suv", "minivan", 
+                          "2seater", "midsize", "subcompact", "compact"))
+```
+
+#### 因子にして順序を指定する場合
+
+* ここでは同時に実行しているが、そもそものデータフレームで因子型で順序を指定し作成しておけばその順序が反映される
+
+```{r}
+mpg %>% 
+  mutate(class = fct_relevel(class,
+                             "pickup", "suv", "minivan", 
+                          "2seater", "midsize", "subcompact", "compact")) %>% 
+ggplot(aes(displ, hwy,
+                color = class)) +
+  geom_point()
+
+```
+
+
+
+## 点をテキストで表示:geom_text
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE) # 凡例なし
+```
+
+### 重なりをなくす
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE,
+            check_overlap = TRUE ) # 凡例なし
+```
+
+### 斜めにする
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE,
+            angle = 45 ) # 凡例なし
+```
 
 
 ## 変数の水準ごとにプロット: facet_wrap()
 ```{r}
 pc +
-  facet_wrap(vars(class))
+   geom_point() +
+   facet_wrap(vars(class))
 ```
 
 ### 並べ方指定
@@ -323,6 +405,67 @@ pc +
 
 ```{r}
 pc +
-  facet_wrap(vars(class),
+   geom_point() +
+   facet_wrap(vars(class),
              ncol = 2)
 ```
+
+
+# 折れ線グラフ:geom_line()
+## ある平均値の年次推移をグループ別にプロットしたい場合
+### 必要な形のデータを作成
+```{r}
+library(knitr) # kable()を使うため
+
+# 車種(class)と年次別の燃料効率(hwy)平均値データを作成
+comp_hwy_y <- 
+mpg %>% 
+  group_by(class, year) %>% 
+  summarise(mean_hwy = mean(hwy))
+
+kable(comp_hwy_y)
+```
+
+#### (参考)wideからlongへのデータ構造変換
+
+##### 参考のためにwide型作成
+```{r}
+comp_hwy_y_w <-
+  comp_hwy_y %>% 
+  pivot_wider(names_from = year,
+              values_from = mean_hwy)
+
+comp_hwy_y_w
+  
+```
+
+* このようなデータ（wide型）があったらlong型に変換する
+
+##### long型に
+```{r}
+comp_hwy_y_w %>% 
+  pivot_longer(-class,            # この変数以外、つまり1999と2008の列を使用
+               names_to = "year",
+               values_to = "mean_hwy")
+```
+
+
+
+### 作図
+```{r}
+ggplot(comp_hwy_y, 
+       aes(year, mean_hwy, color = class)) +
+  geom_line()
+```
+
+#### 使用した年のみのx軸の表示にしデータ点を追加する
+```{r}
+ggplot(comp_hwy_y, 
+       aes(year, mean_hwy, color = class)) +
+  geom_point() +
+  geom_line() +
+  scale_x_continuous(breaks = c(1999, 2008))
+```
+
+
+
