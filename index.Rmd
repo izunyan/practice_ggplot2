@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **24/`r 43+14*2`**チャンク  
+* 完了/追加予定  **27/`r 43+14*2`**チャンク  
   + 追加予定数は2020/07/03 現在
 
 
@@ -81,7 +81,20 @@ p +
 p +
   geom_point(alpha = 0.1) 
 ```
+### 形
 
+* 他の形は`vignette("ggplot2-specs")`のshapeを参考
+* 例
+  + ■："square"
+  + ♦："diamond"
+  + △："triangle open"
+  + ×："cross" 
+  
+
+```{r}
+p +
+  geom_point(shape = "triangle") 
+```
 
 
 ## タイトルと軸: labs()
@@ -109,6 +122,19 @@ p +
     plot.title    = element_text(size = 30),
     plot.subtitle = element_text(size = 20),
     plot.caption  = element_text(size = 15)
+  )
+```
+
+#### タイトルを太字にして色をつける
+```{r}
+p +
+  geom_point() +
+  labs(
+    title = "タイトル") +
+  theme(
+    plot.title    = element_text(size = 30,
+                                 face = "bold",      # 太字
+                                 color = "darkblue") # 色
   )
 ```
 
@@ -229,6 +255,10 @@ p +
 
 #### 相関係数を入れる
 
+* 部分的にイタリックにする場合
+  + rを`italic()`で囲む
+  + `parse = TRUE`を入れる
+  + `=`を表示する場合`==`と入れる 
 
 ```{r}
 # 相関係数の計算
@@ -239,7 +269,8 @@ corc <-
 p +
   geom_point() +
   annotate("text",
-           label = str_c("r = ", corc), # 相関係数の代入 
+           label = str_c("italic(r) == ", corc), # 相関係数の代入 
+           parse = TRUE,
            x = 6, y = 40,
            size = 6)
   
@@ -261,7 +292,7 @@ p +
   theme_classic()
 ```
 
-# 散布図(2):3変数以上
+# 散布図(2): 3変数以上
 ## 色分け
 
 * 使用変数の説明
@@ -289,6 +320,20 @@ pc +
   geom_point() +
   scale_color_manual(values = c("red", "green", "blue", "yellow", "pink", "black", "brown"),
                      labels = c("二人乗り","小型","中型","ミニバン","貨物","サブコンパクト","SUV"))
+```
+
+### 用意された色のセットを使用
+
+* 詳しくは`?scale_color_brewer`
+* ユニバーサルカラーのセット例
+  + Set2  （8色まで）
+  + Paired（12色まで）
+  + Dark2 （8色まで）
+
+```{r}
+pc +
+  geom_point() +
+  scale_color_brewer(palette = "Set2")
 ```
 
 
