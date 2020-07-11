@@ -18,8 +18,8 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **27/`r 43+14*2`**チャンク  
-  + 追加予定数は2020/07/03 現在
+* 完了/追加予定  **36/`r 46+15*2`**チャンク  
+  + 追加予定数は2020/07/11 現在
 
 
 # 辞書の説明
@@ -292,6 +292,27 @@ p +
   theme_classic()
 ```
 
+
+## ジッター入り
+```{r}
+p +
+  geom_jitter()
+```
+
+### ジッターの調整
+```{r}
+p +
+  geom_jitter(width = 0.5, height = 0.5)
+```
+
+
+## データ数によって点の大きさを変える
+```{r}
+p +
+  geom_count()
+```
+
+
 # 散布図(2): 3変数以上
 ## 色分け
 
@@ -480,7 +501,7 @@ comp_hwy_y_w <-
   pivot_wider(names_from = year,
               values_from = mean_hwy)
 
-comp_hwy_y_w
+kable(comp_hwy_y_w)
   
 ```
 
@@ -512,5 +533,93 @@ ggplot(comp_hwy_y,
   scale_x_continuous(breaks = c(1999, 2008))
 ```
 
+## 日付の軸表示
 
+R for Data Science 
+[24 Model building > 24.3 What affects the number of daily flights?](https://bookdown.org/roy_schumacher/r4ds/model-building.html#what-affects-the-number-of-daily-flights) より
+
+  
+### グラフ用のデータ作成（日別の便数作成と曜日の変数追加）
+```{r}
+library(nycflights13) # 
+library(lubridate)    # 
+
+# 日別の便数  
+daily <- flights %>% 
+    mutate(date = make_date(year, month, day)) %>% 
+    group_by(date) %>% 
+    summarise(n = n())
+
+head(daily)  
+
+
+# 曜日変数追加  
+daily <- daily %>% 
+    mutate(wday = wday(date, label = TRUE))    
+``` 
+
+#### 土曜日のデータに限定
+```{r}
+ds <- 
+daily %>% 
+    filter(wday == "土") %>% 
+ ggplot(aes(date, n)) +
+    geom_line()
+
+ds
+```
+
+### ラベルの表示調整
+
+* `date_labels =`の後に指定する文字の意味は`?strptime`を参照
+* 教科書ggplot2: Elegant Graphics for Data Analysisでは
+  + [13 Guides: legends and axes > 13.2.3 Dates: A special case](https://ggplot2-book.org/guides.html#date-scales)  
+
+
+#### 月ごと
+
+* ※ %bで数字のみが出てくる問題については、いずれ検討（おそらくlocaleの問題）
+
+```{r}
+ds +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") # 本来はJanなどの月名の省略文字 
+```
+
+#### 半年ごと
+```{r}
+ds +
+  scale_x_date(date_breaks = "6 month", date_labels = "%Y/%b") # 西暦/月
+```
+
+# 棒グラフ(要約値から作る):geom_col()
+
+* 折れ線グラフの時と同一データを使用
+  + 1999年データに限定
+
+## デフォルトの図
+```{r}
+pb <- 
+comp_hwy_y %>% 
+  filter(year == 1999) %>% 
+  ggplot(aes(x = class, y = mean_hwy)) +
+  geom_col()
+
+pb
+```
+
+### x軸の順番を任意に
+```{r}
+comp_hwy_y %>% 
+  filter(year == 1999) %>% 
+  ggplot(aes(
+    　　　　　fct_relevel(class,
+                         "pickup", "suv", "minivan", 
+                        "2seater", "midsize", "subcompact", "compact"), 
+             mean_hwy)) +
+  geom_col() +
+  labs(x = "class")
+
+
+
+```
 
