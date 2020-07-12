@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **36/`r 46+15*2`**チャンク  
+* 完了/追加予定  **45/`r 46+15*2`**チャンク  
   + 追加予定数は2020/07/11 現在
 
 
@@ -396,6 +396,19 @@ pc +
  guides(color = guide_legend(nrow = 1))  
 
 ```
+### 凡例のタイトル名変更
+```{r}
+pc +
+ geom_point() +
+ guides(color = guide_legend(title = "車種"))  
+
+
+# こちらでもOK
+# pc +
+#  geom_point() +
+#   labs(color = "車種")
+
+```
 
 ### 凡例の順序を逆に
 ```{r}
@@ -484,24 +497,24 @@ pc +
 library(knitr) # kable()を使うため
 
 # 車種(class)と年次別の燃料効率(hwy)平均値データを作成
-comp_hwy_y <- 
+hwy_class_y <- 
 mpg %>% 
   group_by(class, year) %>% 
   summarise(mean_hwy = mean(hwy))
 
-kable(comp_hwy_y)
+kable(hwy_class_y)
 ```
 
 #### (参考)wideからlongへのデータ構造変換
 
 ##### 参考のためにwide型作成
 ```{r}
-comp_hwy_y_w <-
-  comp_hwy_y %>% 
+hwy_class_y_w <-
+  hwy_class_y %>% 
   pivot_wider(names_from = year,
               values_from = mean_hwy)
 
-kable(comp_hwy_y_w)
+kable(hwy_class_y_w)
   
 ```
 
@@ -509,7 +522,7 @@ kable(comp_hwy_y_w)
 
 ##### long型に
 ```{r}
-comp_hwy_y_w %>% 
+hwy_class_y_w %>% 
   pivot_longer(-class,            # この変数以外、つまり1999と2008の列を使用
                names_to = "year",
                values_to = "mean_hwy")
@@ -519,14 +532,14 @@ comp_hwy_y_w %>%
 
 ### 作図
 ```{r}
-ggplot(comp_hwy_y, 
+ggplot(hwy_class_y, 
        aes(year, mean_hwy, color = class)) +
   geom_line()
 ```
 
 #### 使用した年のみのx軸の表示にしデータ点を追加する
 ```{r}
-ggplot(comp_hwy_y, 
+ggplot(hwy_class_y, 
        aes(year, mean_hwy, color = class)) +
   geom_point() +
   geom_line() +
@@ -598,28 +611,131 @@ ds +
 
 ## デフォルトの図
 ```{r}
-pb <- 
-comp_hwy_y %>% 
-  filter(year == 1999) %>% 
-  ggplot(aes(x = class, y = mean_hwy)) +
-  geom_col()
+hwy_class_y_99 <- 
+hwy_class_y %>% 
+  filter(year == 1999)
 
-pb
+pb <- 
+   ggplot(hwy_class_y_99, 
+          aes(x = class, y = mean_hwy))
+
+pb  + geom_col()
 ```
 
+## 棒の書式
+### 色
+
+* 棒グラフの場合、塗りの色は`fill =`で指定
+
+```{r}
+pb  + geom_col(fill = "deepskyblue3")
+```
+
+
+#### 枠線の色
+
+* `color =`だと枠線の色に
+
+```{r}
+pb  + geom_col(color = "red")
+```
+
+## x軸
 ### x軸の順番を任意に
 ```{r}
-comp_hwy_y %>% 
-  filter(year == 1999) %>% 
+hwy_class_y_99 %>% 
   ggplot(aes(
     　　　　　fct_relevel(class,
                          "pickup", "suv", "minivan", 
                         "2seater", "midsize", "subcompact", "compact"), 
              mean_hwy)) +
   geom_col() +
-  labs(x = "class")
+  labs(x = "class") 
+```
 
-
+## 値ラベル
+### 値ラベルを表示
+```{r}
+pb + 
+  geom_col() +
+  geom_text(aes(label = mean_hwy))
 
 ```
 
+
+#### 値ラベルを表示(見た目を整える)
+```{r}
+pb + 
+  geom_col() +
+  geom_text(aes(label = round(mean_hwy, 1)), # 値ラベルを丸める
+            vjust = -1,                      # 値をグラフの上に表示
+            size = 3.5) +                    # 値の文字のサイズ
+  scale_y_continuous(limits = c(0, 30)) # y軸の範囲を指定しないとラベルが隠れるため
+
+```
+
+## グラフ中に線やテキストを追加
+### 縦線:geom_vline()
+
+* 軸がカテゴリの場合は、左から1ずつ数える
+  + ここでは、5を指定しているので5本目の部分に線が引かれている
+
+```{r}
+pb + 
+  geom_col() +
+  geom_vline(xintercept = 5,
+             linetype = "dotted",
+             color = "red",
+             size = 1)
+
+```
+
+### テキスト: annotate()
+```{r}
+pb + 
+  geom_col() +
+  annotate(geom = "text",
+           x = 4.5, y = 28,  # テキストの中心座標位置
+           label = "ここにテキスト",
+           color = "blue",
+           size = 7)
+```
+
+
+## 横向きに
+```{r}
+pb  + 
+  geom_col() +
+  coord_flip()
+
+```
+
+
+# 棒グラフ(2要因以上；要約値から)
+
+* 折れ線グラフの時と同一データを使用
+  + yearの限定なし
+
+## デフォルトの図
+```{r}
+
+pby <- 
+   ggplot(hwy_class_y, 
+          aes(x = class, y = mean_hwy, fill = factor(year)))
+
+pby + 
+  geom_col(position = "dodge") +
+  labs(fill = "year")             # 凡例のタイトル名をyearに戻す 
+```
+
+## 値ラベル
+### 値ラベルを表示
+```{r}
+pby + 
+  geom_col(position = "dodge") +
+  geom_text(aes(label = round(mean_hwy, 1)), 
+            vjust = -1,
+            position = position_dodge(width = 0.9), # ラベルを棒ごとに表示させる
+            size = 3.5) +
+  scale_y_continuous(limits = c(0, 30))
+```
