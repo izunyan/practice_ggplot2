@@ -18,8 +18,8 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **45/`r 46+15*2`**チャンク  
-  + 追加予定数は2020/07/11 現在
+* 完了/追加予定  **57/`r 50+17*2`**チャンク  
+  + 追加予定数は2020/07/19 現在
 
 
 # 辞書の説明
@@ -257,8 +257,9 @@ p +
 
 * 部分的にイタリックにする場合
   + rを`italic()`で囲む
+  + `=`をテキスト内に表示する場合`==`と入れる 
   + `parse = TRUE`を入れる
-  + `=`を表示する場合`==`と入れる 
+
 
 ```{r}
 # 相関係数の計算
@@ -292,6 +293,15 @@ p +
   theme_classic()
 ```
 
+### 全体的に見やすくなるテンプレート使用
+```{r}
+library(see)
+
+p + 
+  geom_point() +
+  theme_modern()
+```
+
 
 ## ジッター入り
 ```{r}
@@ -322,10 +332,12 @@ p +
 ```{r}
 pc <- 
 ggplot(mpg, aes(displ, hwy,
-                color = class))
+                color = class)) # 色分けに使用する変数指定
 
 pc + geom_point()
 ```
+
+
 
 ### 色を手動で指定
 ```{r}
@@ -356,6 +368,7 @@ pc +
   geom_point() +
   scale_color_brewer(palette = "Set2")
 ```
+
 
 
 ## 凡例の調整
@@ -396,6 +409,7 @@ pc +
  guides(color = guide_legend(nrow = 1))  
 
 ```
+
 ### 凡例のタイトル名変更
 ```{r}
 pc +
@@ -469,6 +483,34 @@ pc +
             angle = 45 ) # 凡例なし
 ```
 
+## 一部のデータを目立たせる
+
+* `geom_point()`を重ね書き
+  + 目立たせる車種を`filter()`で選択
+
+```{r}
+pp <- 
+p +
+# suvのデータのみプロット
+   geom_point(
+     data = filter(mpg, class == "suv"),
+     color = "blue",
+     size = 3) +
+# 通常のプロット
+   geom_point()
+
+pp
+```
+
+
+### ラベル付け
+```{r}
+pp +
+annotate(geom = "point", x = 5.5, y = 40, colour = "blue", size = 3) + 
+annotate(geom = "point", x = 5.5, y = 40) + 
+annotate(geom = "text", x = 5.6, y = 40, label = "suv", hjust = "left")
+```
+
 
 ## 変数の水準ごとにプロット: facet_wrap()
 ```{r}
@@ -489,6 +531,16 @@ pc +
              ncol = 2)
 ```
 
+## 変数の水準ごとにプロット(全体のプロットも残す)
+
+* `gghilight`パッケージを使う（ここだけで使うので`gghilight::`をつける）
+
+```{r}
+pc +
+   geom_point() +
+   gghighlight::gghighlight() +
+   facet_wrap(vars(class))
+```
 
 # 折れ線グラフ:geom_line()
 ## ある平均値の年次推移をグループ別にプロットしたい場合
@@ -632,12 +684,21 @@ pb  + geom_col(fill = "deepskyblue3")
 ```
 
 
+
 #### 枠線の色
 
 * `color =`だと枠線の色に
 
 ```{r}
 pb  + geom_col(color = "red")
+```
+
+### 幅
+
+* デフォルトは0.9
+
+```{r}
+pb  + geom_col(width = 0.5)
 ```
 
 ## x軸
@@ -652,6 +713,15 @@ hwy_class_y_99 %>%
   geom_col() +
   labs(x = "class") 
 ```
+
+### 軸のラベルの向き
+```{r}
+pb  + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1))
+```
+
 
 ## 値ラベル
 ### 値ラベルを表示
@@ -670,9 +740,23 @@ pb +
   geom_text(aes(label = round(mean_hwy, 1)), # 値ラベルを丸める
             vjust = -1,                      # 値をグラフの上に表示
             size = 3.5) +                    # 値の文字のサイズ
-  scale_y_continuous(limits = c(0, 30)) # y軸の範囲を指定しないとラベルが隠れるため
+  scale_y_continuous(limits = c(0, 30))      # y軸の範囲を指定しないとラベルが隠れるため
 
 ```
+
+#### 値を棒の中に
+
+* `vjust =`の値を大きくするほど下の位置に移動する
+
+```{r}
+pb + 
+  geom_col() +
+  geom_text(aes(label = round(mean_hwy, 1)), # 値ラベルを丸める
+            vjust = 1.5,                     # 値をグラフの中に表示
+            size = 4,                        # 文字のサイズ        
+            color = "white")                 # 文字の色
+```
+
 
 ## グラフ中に線やテキストを追加
 ### 縦線:geom_vline()
@@ -710,6 +794,20 @@ pb  +
 
 ```
 
+## 並び替え
+
+* 左から降順にしたい場合は、`fct_reorder(class, mean_hwy, .desc = TRUE)`
+
+```{r}
+ ggplot(hwy_class_y_99, 
+          aes(x = fct_reorder(class, mean_hwy), 
+              y = mean_hwy)) +
+  geom_col()
+
+```
+
+
+
 
 # 棒グラフ(2要因以上；要約値から)
 
@@ -739,3 +837,50 @@ pby +
             size = 3.5) +
   scale_y_continuous(limits = c(0, 30))
 ```
+
+
+# バイオリンプロット
+## デフォルトの図
+```{r}
+pv <- 
+ggplot(mpg, aes(class, hwy,
+                fill = class)) # 色分けに使用する変数指定
+
+pv + geom_violin()
+```
+
+### 濃さ（透明度）
+```{r}
+pv + geom_violin(alpha = 0.5)
+```
+
+
+# ハーフバイオリン・ハーフドットプロット
+## デフォルトの図
+
+* `see`パッケージを使用
+* ドットサイズのデフォルトが0.7なのでここだけ大きくした
+
+```{r}
+library(see)
+
+pv + geom_violindot(size_dots = 5) # ドットサイズ変更
+```
+
+
+```{r eval=FALSE, include=FALSE}
+# ドットプロット
+## デフォルトの図
+pv + geom_dotplot(binaxis = "y")
+```
+
+```{r eval=FALSE, include=FALSE}
+### 見やすく整える
+v + 
+  geom_dotplot(binaxis = "y",
+               binwidth = 0.9,
+               dotsize = 0.9,        # 点の大きさ
+               show.legend = FALSE,  # 凡例を消す
+               stackdir = "center")  # 点をセンター並びに
+```
+
