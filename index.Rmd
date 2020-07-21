@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **57/`r 50+17*2`**チャンク  
+* 完了/追加予定  **63/`r 50+17*2`**チャンク  
   + 追加予定数は2020/07/19 現在
 
 
@@ -154,6 +154,52 @@ p +
   )
 ```
 
+### フォント
+#### MS明朝
+```{r}
+windowsFonts("mincho" = windowsFont("MS Mincho"))
+
+p +
+  geom_point() +
+  labs(title = "Title タイトル") +
+  theme(plot.title = element_text(family = "mincho"))
+
+```
+
+#### メイリオ
+```{r}
+windowsFonts("MEI" = windowsFont("Meiryo"))
+
+p +
+  geom_point() +
+  labs(title = "Title タイトル") +
+  theme(plot.title = element_text(family = "MEI"))
+
+```
+
+#### Times New Roman
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル") +
+  theme(plot.title = element_text(family = "serif"))
+```
+
+#### Arial
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル") +
+  theme(plot.title = element_text(family = "sans"))
+```
+
+#### Courier New
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル") +
+  theme(plot.title = element_text(family = "mono"))
+```
 
 ### 軸の名前
 
@@ -461,6 +507,15 @@ ggplot(aes(displ, hwy,
 
 ```
 
+### 凡例の背景色を消す
+
+* 詳しくは https://ggplot2.tidyverse.org/reference/theme.html
+
+```{r}
+pc +
+ geom_point() +
+  theme(legend.key = element_blank())
+```
 
 
 ## 点をテキストで表示:geom_text
