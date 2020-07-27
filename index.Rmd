@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # 辞書作成進捗
 
 * 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **63/`r 50+17*2`**チャンク  
+* 完了/追加予定  **77/`r 50+17*2`**チャンク  
   + 追加予定数は2020/07/19 現在
 
 
@@ -28,6 +28,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 * データの可視化と細かい部分の微調整をするための備忘録
 * 気になる用語や関数について`ctrl + F`で検索
+* グラフ全般にかかわる共通の書式は散布図のところに多く記述
+  + 散布図(1)：タイトルと軸、散布図(2)：凡例の調整など
+  
 
 ## 参考情報
 * [公式のレファレンス](https://ggplot2.tidyverse.org/reference/index.html)
@@ -154,15 +157,19 @@ p +
   )
 ```
 
-### フォント
+### フォント(タイトル)
+
+* 以下はwindowsでのやり方を想定
+
 #### MS明朝
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
 p +
   geom_point() +
-  labs(title = "Title タイトル") +
-  theme(plot.title = element_text(family = "mincho"))
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "mincho",
+                                  size = 20))
 
 ```
 
@@ -172,8 +179,9 @@ windowsFonts("MEI" = windowsFont("Meiryo"))
 
 p +
   geom_point() +
-  labs(title = "Title タイトル") +
-  theme(plot.title = element_text(family = "MEI"))
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "MEI",
+                                  size = 20))
 
 ```
 
@@ -181,24 +189,27 @@ p +
 ```{r}
 p +
   geom_point() +
-  labs(title = "Title タイトル") +
-  theme(plot.title = element_text(family = "serif"))
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "serif",
+                                  size = 20))
 ```
 
 #### Arial
 ```{r}
 p +
   geom_point() +
-  labs(title = "Title タイトル") +
-  theme(plot.title = element_text(family = "sans"))
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "sans",
+                                  size = 20))
 ```
 
 #### Courier New
 ```{r}
 p +
   geom_point() +
-  labs(title = "Title タイトル") +
-  theme(plot.title = element_text(family = "mono"))
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "mono",
+                                  size = 20))
 ```
 
 ### 軸の名前
@@ -215,15 +226,59 @@ p +
 ```
 
 
-## 軸の数値範囲: scale_continuous()  
-### 数値範囲確認
+### フォント(軸)
+#### 数値
+
+```{r}
+p +
+  geom_point() +
+  labs(
+    title = "Title タイトル　たいとる　題名",
+    x = "hwy_x軸の名前",
+    y = "displ_y軸の名前"
+       ) +
+  theme(axis.text =  element_text(family = "serif",
+                                  size = 15))
+```
+
+#### タイトル（軸の名前）
+
+```{r}
+p +
+  geom_point() +
+  labs(
+    title = "Title タイトル　たいとる　題名",
+    x = "hwy_x軸の名前",
+    y = "displ_y軸の名前"
+       ) +
+  theme(axis.title =  element_text(family = "serif",
+                                   size = 15))
+```
+
+### フォント(一括)
+```{r}
+p +
+  geom_point() +
+  labs(
+    title = "Title タイトル　たいとる　題名",
+    x = "hwy_x軸の名前",
+    y = "displ_y軸の名前"
+       ) +
+  theme(text =  element_text(family = "serif",
+                                  size = 15))
+```
+
+
+
+### 軸の数値範囲: scale_continuous()  
+#### 数値範囲確認
 ```{r}
 mpg %>% 
   select(displ, hwy) %>% # displとhwyを選んでsummary()に渡す
   summary()
 ```
 
-### 範囲を指定して１ずつ増やす
+#### 範囲を指定して１ずつ増やす
 
 * 数値型の場合は、`scale_x_continuous()`および`scale_y_continuous()`のbreaksで指定
 * 表示範囲を強制指定する場合は`limits =` 
@@ -240,7 +295,7 @@ p +
 ```
 
 
-#### 手動で指定
+##### 手動で指定
 ```{r}
 p +
   geom_point() +
@@ -248,7 +303,7 @@ p +
     breaks = c(15, 30, 45))       
 ```
 
-## 軸の数値のサイズ
+### 軸の数値のサイズ
 ```{r}
 p +
   geom_point() +
@@ -297,6 +352,18 @@ p +
            label = "ここにテキスト",
            color = "blue",
            size = 10)
+```
+
+#### フォント
+
+```{r}
+p +
+  geom_point() +
+  annotate(geom = "text",
+           x = 5, y = 35,  # テキストの中心座標位置
+           label = "text テキスト",
+           size = 10,
+           family = "serif")
 ```
 
 #### 相関係数を入れる
@@ -738,7 +805,10 @@ pb  + geom_col()
 pb  + geom_col(fill = "deepskyblue3")
 ```
 
-
+#### 棒ごとに色をつける
+```{r}
+pb  + geom_col(aes(fill = class))
+```
 
 #### 枠線の色
 
@@ -881,6 +951,14 @@ pby +
   labs(fill = "year")             # 凡例のタイトル名をyearに戻す 
 ```
 
+## 色を手動で指定
+```{r}
+pby + 
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = c("violetred3", "deepskyblue3"))
+```
+
+
 ## 値ラベル
 ### 値ラベルを表示
 ```{r}
@@ -894,44 +972,124 @@ pby +
 ```
 
 
-# バイオリンプロット
+# 棒グラフ（カウントや割合）：geom_bar()
+
 ## デフォルトの図
 ```{r}
-pv <- 
-ggplot(mpg, aes(class, hwy,
-                fill = class)) # 色分けに使用する変数指定
+pbar <- 
+ggplot(mpg, aes(x = class))
 
-pv + geom_violin()
+pbar +  geom_bar()
+```
+
+
+### 2要因でカウント
+
+* `drv`:
+
+```{r}
+pbar +
+  geom_bar(aes(fill = drv))
+``` 
+
+#### x軸の要因の水準ごとに割合として表示 
+```{r}
+pbar +
+  geom_bar(aes(fill = drv), position = "fill")
+``` 
+
+
+#### 積み上げではなく並べる
+
+```{r}
+pbar +
+  geom_bar(aes(fill = drv), position = "dodge")
+``` 
+
+##### 棒の間に隙間を作る
+
+```{r}
+pbar +
+  geom_bar(aes(fill = drv), position = "dodge2")
+``` 
+
+
+
+##### 水準が少ない場合も棒が太くならないようにする
+
+* 細かい設定を行っていく場合は、`position_dodge()`の中で指定していく
+
+```{r}
+pbar +
+  geom_bar(aes(fill = drv), 
+           position = position_dodge(preserve = "single"))
+``` 
+
+###### 棒の位置を真ん中にして棒の間を広げる
+
+* 棒の間を広げる設定は`position_dodge2()`
+
+```{r}
+pbar +
+  geom_bar(aes(fill = drv), 
+           position = position_dodge2(preserve = "single",
+                                      pad = 0.3))
+``` 
+
+
+# ビースウォーム（蜂峰図、蜂群図）
+
+* `ggbeeswarm`パッケージを使う（ここだけで使うので`ggbeeswarm::`をつける）
+
+## デフォルトの図
+```{r}
+pch <- 
+ggplot(mpg, aes(class, hwy))
+
+
+pch + 
+  ggbeeswarm::geom_beeswarm(aes(color = class)) # 色分けに指定する変数
+
+```
+
+
+# バイオリンプロット
+
+## デフォルトの図
+```{r}
+pch + 
+  geom_violin(aes(fill = class))  # 色分けに指定する変数
 ```
 
 ### 濃さ（透明度）
 ```{r}
-pv + geom_violin(alpha = 0.5)
+pch + geom_violin(aes(fill = class),
+                  alpha = 0.5)
 ```
 
 
 # ハーフバイオリン・ハーフドットプロット
 ## デフォルトの図
 
-* `see`パッケージを使用
+* `see`パッケージを使う（ここだけで使うので`see::`をつける
 * ドットサイズのデフォルトが0.7なのでここだけ大きくした
 
 ```{r}
-library(see)
-
-pv + geom_violindot(size_dots = 5) # ドットサイズ変更
+pch + 
+  see::geom_violindot(aes(fill = class),
+                     size_dots = 5) # ドットサイズ変更
 ```
 
 
 ```{r eval=FALSE, include=FALSE}
 # ドットプロット
 ## デフォルトの図
-pv + geom_dotplot(binaxis = "y")
+pch + geom_dotplot(binaxis = "y")
 ```
 
 ```{r eval=FALSE, include=FALSE}
 ### 見やすく整える
-v + 
+pch + 
   geom_dotplot(binaxis = "y",
                binwidth = 0.9,
                dotsize = 0.9,        # 点の大きさ
