@@ -11,20 +11,29 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	fig.height = 5,
+	fig.width = 5,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
 
-# 辞書作成進捗
 
-* 初期状態: 16チャンク(内非グラフ部分2チャンク)  
-* 完了/追加予定  **77/`r 50+17*2`**チャンク  
-  + 追加予定数は2020/07/19 現在
+# はじめに
+## 辞書作成進捗
+
+* 完了/追加予定  **84/`r 51 + 17*2`**チャンク  
+  + 追加予定数は2020/07/29 現在
+  + 完了数は現チャンク数から初期作成の14チャンクとknitrオプション関連2チャンクを引いた数
 
 
-# 辞書の説明
+## 辞書の説明
 
-## 概要
+
+### 概要
 
 * データの可視化と細かい部分の微調整をするための備忘録
 * 気になる用語や関数について`ctrl + F`で検索
@@ -32,7 +41,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
   + 散布図(1)：タイトルと軸、散布図(2)：凡例の調整など
   
 
-## 参考情報
+### 参考情報
 * [公式のレファレンス](https://ggplot2.tidyverse.org/reference/index.html)
    + 各関数と引数の意味がグラフ付きで解説されている
 
@@ -41,6 +50,18 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
   
 * [R Graphics Cookbook, 2nd edition](https://r-graphics.org/)
   + by Winston Chang
+
+
+### chunkの全体設定
+
+* `fig.width`と`fig.height`でhtml上での図の大きさ一括指定
+  + デフォルトは7
+
+```{r eval = FALSE}
+# 全体 
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.width = 5, fig.height = 5)
+```
    
 # 散布図(1): 2変数のみ
 ## デフォルトの図
@@ -537,6 +558,17 @@ pc +
 
 ```
 
+#### 長いタイトル名の改行
+
+* 改行部分に`\n`を入れる
+
+```{r}
+pc +
+ geom_point() +
+ guides(color = guide_legend(title = "長い\nタイトル"))  
+
+```
+
 ### 凡例の順序を逆に
 ```{r}
 pc +
@@ -982,31 +1014,114 @@ ggplot(mpg, aes(x = class))
 pbar +  geom_bar()
 ```
 
+### ラベルを付ける
 
-### 2要因でカウント
 
-* `drv`:
+```{r}
+pbar +
+  geom_bar() +
+  geom_text(aes(label = ..count..), 
+            stat = "count", 
+            vjust = 1.5,
+            color = "white") # 棒の上に黒い文字で出したい場合はこれを削除し、vjustを0.5に
+
+
+```
+
+## カテゴリ変数1つだけで1本の棒グラフ
+
+* 1変数だけの場合は、`x = factor(1)`と固定する
+
+```{r}
+ggplot(mpg, 
+       aes(x = factor(1), fill = class)) + 
+  geom_bar() +
+  labs(x = "class") +
+  geom_text(aes(label = ..count..), 
+            stat = "count",
+            position = position_stack(vjust = 0.5))
+  
+```
+
+
+## カテゴリ変数1つだけで1本の棒グラフ（割合）
+
+```{r}
+# まずパーセントのデータを別途作成
+percent <-
+  mpg %>%
+  count(class) %>%
+  mutate(pct = scales::percent(n/sum(n)))
+
+# グラフ
+ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
+  geom_bar(position = "fill") +
+  geom_text(data = percent,  # 上で作ったパーセントのデータ指定
+            aes(y = n, label = pct),
+            position = position_fill(vjust = 0.5)) +
+    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
+  
+```
+
+
+## 2要因でカウント
+
+* `drv`:ドライブトレインのタイプ
+  + f = 前輪駆動, r = 後輪駆動, 4 = 四輪駆動 
 
 ```{r}
 pbar +
   geom_bar(aes(fill = drv))
 ``` 
 
-#### x軸の要因の水準ごとに割合として表示 
+### ラベルを付ける
 ```{r}
 pbar +
-  geom_bar(aes(fill = drv), position = "fill")
+  geom_bar(aes(fill = factor(drv))) +
+  geom_text(aes(fill = factor(drv),
+                label = ..count..), 
+                stat = "count",
+            position = position_stack(vjust = 0.5))
+```
+
+
+### x軸の要因の水準ごとに割合として表示 
+```{r}
+pbar +
+  geom_bar(aes(fill = drv),
+           position = "fill") +
+    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
 ``` 
 
+#### パーセントを表示
+```{r}
 
-#### 積み上げではなく並べる
+# まずパーセントのデータを別途作成
+percent <-
+  mpg %>%
+  group_by(class) %>%
+  count(class, drv) %>%
+  mutate(pct = scales::percent(n/sum(n)))
+
+# グラフ
+ggplot(mpg, aes(x = factor(class), fill = factor(drv))) +
+  geom_bar(position = "fill") +
+  geom_text(data = percent,  # 上で作ったパーセントのデータ指定
+            aes(y = n, label = pct),
+            position = position_fill(vjust = 0.5)) +
+    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
+
+```
+
+
+### 積み上げではなく並べる
 
 ```{r}
 pbar +
   geom_bar(aes(fill = drv), position = "dodge")
 ``` 
 
-##### 棒の間に隙間を作る
+#### 棒の間に隙間を作る
 
 ```{r}
 pbar +
@@ -1015,7 +1130,7 @@ pbar +
 
 
 
-##### 水準が少ない場合も棒が太くならないようにする
+#### 水準が少ない場合も棒が太くならないようにする
 
 * 細かい設定を行っていく場合は、`position_dodge()`の中で指定していく
 
@@ -1025,7 +1140,7 @@ pbar +
            position = position_dodge(preserve = "single"))
 ``` 
 
-###### 棒の位置を真ん中にして棒の間を広げる
+##### 棒の位置を真ん中にして棒の間を広げる
 
 * 棒の間を広げる設定は`position_dodge2()`
 
@@ -1071,12 +1186,12 @@ pch + geom_violin(aes(fill = class),
 # ハーフバイオリン・ハーフドットプロット
 ## デフォルトの図
 
-* `see`パッケージを使う（ここだけで使うので`see::`をつける
+* `see`パッケージの`geom_violindot()`を使う
 * ドットサイズのデフォルトが0.7なのでここだけ大きくした
 
 ```{r}
 pch + 
-  see::geom_violindot(aes(fill = class),
+  geom_violindot(aes(fill = class),
                      size_dots = 5) # ドットサイズ変更
 ```
 
