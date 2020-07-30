@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 # はじめに
 ## 辞書作成進捗
 
-* 完了/追加予定  **84/`r 51 + 17*2`**チャンク  
+* 完了/追加予定  **87/`r 51 + 17*2`**チャンク  
   + 追加予定数は2020/07/29 現在
   + 完了数は現チャンク数から初期作成の14チャンクとknitrオプション関連2チャンクを引いた数
 
@@ -535,6 +535,17 @@ pc +
 
 ```
 
+#### 凡例のボックスの背景色を透明に
+```{r}
+pc +
+ geom_point() +
+ theme(legend.position = c(.70, .80),
+       legend.direction = "horizontal",
+       legend.background = element_blank()) 
+
+```
+
+
 ### 凡例の行数や列数指定
 ```{r}
 pc +
@@ -1039,7 +1050,8 @@ ggplot(mpg,
   labs(x = "class") +
   geom_text(aes(label = ..count..), 
             stat = "count",
-            position = position_stack(vjust = 0.5))
+            position = position_stack(vjust = 0.5)) +
+  theme(axis.text.x = element_blank())                # 軸の1を消す
   
 ```
 
@@ -1059,8 +1071,9 @@ ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
   geom_text(data = percent,  # 上で作ったパーセントのデータ指定
             aes(y = n, label = pct),
             position = position_fill(vjust = 0.5)) +
-    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
-  
+    scale_y_continuous(labels = scales::percent) +   # y軸を%表記に
+    theme(axis.text.x = element_blank()) +           # x軸の1を消す
+  labs(x = "class")                                  # x軸の名前をclassに
 ```
 
 
@@ -1194,6 +1207,46 @@ pch +
   geom_violindot(aes(fill = class),
                      size_dots = 5) # ドットサイズ変更
 ```
+
+# 複数のグラフを1枚にまとめる
+
+* 色々なやり方があるけどまずは基本的な所から（徐々に拡充予定）
+* 参考：https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
+
+## 一行または一列
+```{r} 
+library(gridExtra)
+
+p1 <- p + geom_point() 
+p2 <-
+  pc + 
+  geom_point() +
+   theme(legend.text = element_text(size = 6),# 凡例のテキストを小さく
+         legend.position = "bottom",          # 凡例を下に
+         legend.background = element_blank()) # 凡例のボックス背景を透明に
+  
+ 
+grid.arrange(p1, p2, nrow = 1) # 1行に
+
+grid.arrange(p1, p2, ncol = 1) # 1列に
+
+
+```
+
+
+## 四等分（2x2）
+```{r}
+p3 <- 
+pc +
+   geom_point() +
+   facet_wrap(vars(class)) +
+ theme(legend.position = "none") # 凡例を消す
+
+grid.arrange(p1, p2, p3, ncol = 2) # 2列に
+
+
+```
+
 
 
 ```{r eval=FALSE, include=FALSE}
