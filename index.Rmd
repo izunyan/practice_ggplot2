@@ -696,6 +696,7 @@ pc +
              ncol = 2)
 ```
 
+
 ## 変数の水準ごとにプロット(全体のプロットも残す)
 
 * `gghilight`パッケージを使う（ここだけで使うので`gghilight::`をつける）
@@ -706,6 +707,23 @@ pc +
    gghighlight::gghighlight() +
    facet_wrap(vars(class))
 ```
+
+
+## 変数の水準ごとにプロット(2要因)
+```{r}
+pc +
+   geom_point() +
+   facet_wrap(vars(class,cyl))
+```
+
+
+### 変数の水準ごとにプロット(2要因):facet_grid()
+```{r}
+pc +
+   geom_point() +
+   facet_grid(vars(cyl),vars(class))
+```
+
 
 # 折れ線グラフ:geom_line()
 ## ある平均値の年次推移をグループ別にプロットしたい場合
