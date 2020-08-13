@@ -105,6 +105,8 @@ p +
 p +
   geom_point(alpha = 0.1) 
 ```
+
+
 ### 形
 
 * 他の形は`vignette("ggplot2-specs")`のshapeを参考
@@ -411,7 +413,22 @@ p +
   
 ```
 
+## グラフ外にテキストを追加
 
+* `coord_cartesian(clip = "off")`を使って、グラフの灰色背景部分を`xlim = `,`ylim =`の座標で指定した領域までに表示制限する必要がある
+
+```{r}
+p +
+  geom_point() +
+  annotate(geom = "text",
+           x = 0.5, y = 7,  # テキストの中心座標位置
+           color = "blue",
+           sie = 10,
+           label = "テキスト") +
+  coord_cartesian(xlim = c(1, 7.2),
+                  ylim = c(11, 44),
+                  clip = "off")
+```
 
 ## 背景の色や線のテンプレート変更 
 
@@ -568,6 +585,20 @@ pc +
 #   labs(color = "車種")
 
 ```
+
+#### タイトルを消す
+```{r}
+pc +
+ geom_point() +
+ guides(color = guide_legend(title = ""))
+
+# こちらでもOK
+# pc +
+#  geom_point() +
+#   labs(color = "")
+
+```
+
 
 #### 長いタイトル名の改行
 
