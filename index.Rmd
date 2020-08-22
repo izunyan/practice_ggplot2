@@ -13,7 +13,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = TRUE,
-	fig.height = 5,
+	fig.height = 4,
 	fig.width = 5,
 	message = FALSE,
 	warning = FALSE
@@ -22,10 +22,10 @@ knitr::opts_chunk$set(
 
 
 
-# はじめに
+# はじめに {-}
 ## 辞書作成進捗
 
-* 完了/追加予定  **87/`r 51 + 17*2`**チャンク  
+* 完了/追加予定  **92/`r 51 + 17*2`**チャンク  
   + 追加予定数は2020/07/29 現在
   + 完了数は現チャンク数から初期作成の14チャンクとknitrオプション関連2チャンクを引いた数
 
@@ -60,7 +60,7 @@ knitr::opts_chunk$set(
 ```{r eval = FALSE}
 # 全体 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.width = 5, fig.height = 5)
+                      fig.width = 5, fig.height = 4)
 ```
    
 # 散布図(1): 2変数のみ
@@ -377,6 +377,18 @@ p +
            size = 10)
 ```
 
+#### 角度
+```{r}
+p +
+  geom_point() +
+  annotate(geom = "text",
+           x = 5, y = 35,  # テキストの中心座標位置
+           label = "ここにテキスト",
+           color = "blue",
+           size = 9,
+           angle = 90)
+```
+
 #### フォント
 
 ```{r}
@@ -429,6 +441,62 @@ p +
                   ylim = c(11, 44),
                   clip = "off")
 ```
+
+## グラフ内外の自由な位置にテキストや画像を追加
+
+* パッケージ`cowplot`を使用
+* x,yの値は、グラフ全体の範囲をそれぞれ0～1としている
+
+### テキスト
+```{r}
+library(cowplot)
+
+ppc <- 
+p + geom_point()
+ 
+ggdraw(ppc) + 
+  draw_label("text", 
+             colour = "blue", 
+             size = 20,
+             x = 0.1,
+             y = 0.2
+)
+```
+
+### 画像
+
+* `magick`パッケージのインストールが必要
+
+```{r}
+ggdraw(ppc) + 
+  draw_image("kujira.png", 
+             x = 0.5, y = 0.6,
+             width = 0.3, height = 0.3)
+
+```
+
+## 線のあてはめ
+### 曲線
+```{r}
+p +
+  geom_point() +
+  geom_smooth()
+```
+
+### 直線
+```{r}
+p +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+#### 標準誤差の範囲を消す
+```{r}
+p +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
 
 ## 背景の色や線のテンプレート変更 
 
@@ -727,6 +795,24 @@ pc +
              ncol = 2)
 ```
 
+### グラフ外にテキストを追加
+```{r}
+library(cowplot)
+
+pc_wrap <- 
+pc +
+   geom_point() +
+   facet_wrap(vars(class))
+
+ggdraw(pc_wrap) +
+  draw_label("text", x = 0.05, y = 0.95, color = "blue") +
+  draw_label("text", x = 0.05, y = 0.65, color = "blue") +
+  draw_label("text", x = 0.05, y = 0.35, color = "blue")
+
+
+```
+
+
 
 ## 変数の水準ごとにプロット(全体のプロットも残す)
 
@@ -754,6 +840,7 @@ pc +
    geom_point() +
    facet_grid(vars(cyl),vars(class))
 ```
+
 
 
 # 折れ線グラフ:geom_line()
@@ -1008,6 +1095,23 @@ pb +
 pb  + 
   geom_col() +
   coord_flip()
+
+```
+
+### 横向きのグラフ外にテキスト追加
+```{r}
+pb  + 
+  geom_col() +
+  annotate(geom = "text",
+           x = 7.5, y = -5,  # テキストの中心座標位置,表示されるグラフの見かけはXYが入れ替わる
+           color = "blue",
+           size = 6,
+           label = "テキスト") +
+   coord_flip(xlim = c(1, 7.2),
+                  ylim = c(0, 30),
+                  clip = "off")
+  
+  
 
 ```
 
