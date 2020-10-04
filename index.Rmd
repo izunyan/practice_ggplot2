@@ -959,8 +959,17 @@ ds +
 
 # 棒グラフ(要約値から作る):geom_col()
 
-* 折れ線グラフの時と同一データを使用
+* [折れ線グラフ:geom_line()]の時と同一データを使用
   + 1999年データに限定
+
+```{r}
+# 【再掲】車種(class)と年次別の燃料効率(hwy)平均値データを作成
+hwy_class_y <- 
+mpg %>% 
+  group_by(class, year) %>% 
+  summarise(mean_hwy = mean(hwy))
+```
+
 
 ## デフォルトの図
 ```{r}
@@ -1016,6 +1025,18 @@ hwy_class_y_99 %>%
              mean_hwy)) +
   geom_col() +
   labs(x = "class") 
+```
+
+### 降順に並び替え
+
+* 左から降順にしたい場合は、`fct_reorder(class, mean_hwy, .desc = TRUE)`
+
+```{r}
+ ggplot(hwy_class_y_99, 
+          aes(x = fct_reorder(class, mean_hwy), 
+              y = mean_hwy)) +
+  geom_col()
+
 ```
 
 ### 軸のラベルの向き
@@ -1115,17 +1136,7 @@ pb  +
 
 ```
 
-## 並び替え
 
-* 左から降順にしたい場合は、`fct_reorder(class, mean_hwy, .desc = TRUE)`
-
-```{r}
- ggplot(hwy_class_y_99, 
-          aes(x = fct_reorder(class, mean_hwy), 
-              y = mean_hwy)) +
-  geom_col()
-
-```
 
 
 
