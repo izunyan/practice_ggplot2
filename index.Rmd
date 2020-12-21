@@ -23,13 +23,6 @@ knitr::opts_chunk$set(
 
 
 # はじめに {-}
-## 辞書作成進捗
-
-* 完了/追加予定  **92/`r 51 + 17*2`**チャンク  
-  + 追加予定数は2020/07/29 現在
-  + 完了数は現チャンク数から初期作成の14チャンクとknitrオプション関連2チャンクを引いた数
-
-
 ## 辞書の説明
 
 
@@ -124,7 +117,7 @@ p +
 
 
 ## タイトルと軸: labs()
-### タイトル
+### タイトル {.tabset}
 ```{r}
 p +
   geom_point() +
@@ -135,7 +128,7 @@ p +
        )
 ```
 
-#### タイトルの文字サイズ変更
+#### 文字サイズ変更 {-}
 ```{r}
 p +
   geom_point() +
@@ -151,7 +144,7 @@ p +
   )
 ```
 
-#### タイトルを太字にして色をつける
+#### 太字にして色を変更 {-}
 ```{r}
 p +
   geom_point() +
@@ -164,7 +157,7 @@ p +
   )
 ```
 
-#### タイトルの位置変更
+#### 位置変更 {-}
 ```{r}
 p +
   geom_point() +
@@ -180,11 +173,11 @@ p +
   )
 ```
 
-### フォント(タイトル)
+### フォント(タイトル) {.tabset}
 
 * 以下はwindowsでのやり方を想定
 
-#### MS明朝
+#### MS明朝 {-}
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
@@ -196,7 +189,7 @@ p +
 
 ```
 
-#### メイリオ
+#### メイリオ {-}
 ```{r}
 windowsFonts("MEI" = windowsFont("Meiryo"))
 
@@ -208,7 +201,7 @@ p +
 
 ```
 
-#### Times New Roman
+#### Times New Roman {-}
 ```{r}
 p +
   geom_point() +
@@ -217,7 +210,7 @@ p +
                                   size = 20))
 ```
 
-#### Arial
+#### Arial {-}
 ```{r}
 p +
   geom_point() +
@@ -226,7 +219,7 @@ p +
                                   size = 20))
 ```
 
-#### Courier New
+#### Courier New {-}
 ```{r}
 p +
   geom_point() +
@@ -326,16 +319,23 @@ p +
     breaks = c(15, 30, 45))       
 ```
 
-### 軸の数値のサイズ
+### 軸の数値のサイズ {.tabset}
+#### 9
 ```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 9)) # 単位はpt
+```
 
+#### 12
+```{r}
 p + 
   geom_point() +
   theme(axis.text = element_text(size = 12)) # 単位はpt
+```
 
+#### 16
+```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 16)) # 単位はpt
@@ -498,21 +498,25 @@ p +
 ```
 
 
-## 背景の色や線のテンプレート変更 
-
+## 背景の色や線のテンプレート変更 {.tabset}
+### theme_bw {-}
 ```{r}
 p + 
   geom_point() +
   theme_bw()
 ```
 
+### theme_classic {-}
 ```{r}
 p +
   geom_point() +
   theme_classic()
 ```
 
-### 全体的に見やすくなるテンプレート使用
+### theme_modern {-}
+
+* 全体的に見やすくなるテンプレート
+
 ```{r}
 library(see)
 
@@ -935,14 +939,14 @@ daily %>%
 ds
 ```
 
-### ラベルの表示調整
+### ラベルの表示調整 {.tabset}
 
 * `date_labels =`の後に指定する文字の意味は`?strptime`を参照
 * 教科書ggplot2: Elegant Graphics for Data Analysisでは
   + [13 Guides: legends and axes > 13.2.3 Dates: A special case](https://ggplot2-book.org/guides.html#date-scales)  
 
 
-#### 月ごと
+#### 月ごと{-}
 
 * ※ %bで数字のみが出てくる問題については、いずれ検討（おそらくlocaleの問題）
 
@@ -951,7 +955,7 @@ ds +
   scale_x_date(date_breaks = "1 month", date_labels = "%b") # 本来はJanなどの月名の省略文字 
 ```
 
-#### 半年ごと
+#### 半年ごと{-}
 ```{r}
 ds +
   scale_x_date(date_breaks = "6 month", date_labels = "%Y/%b") # 西暦/月
