@@ -23,10 +23,10 @@ knitr::opts_chunk$set(
 
 
 # はじめに {-}
-## 辞書の説明
+## 辞書の説明 {-}
 
 
-### 概要
+### 概要 {-}
 
 * データの可視化と細かい部分の微調整をするための備忘録
 * 気になる用語や関数について`ctrl + F`で検索
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
   + 散布図(1)：タイトルと軸、散布図(2)：凡例の調整など
   
 
-### 参考情報
+### 参考情報 {-}
 * [公式のレファレンス](https://ggplot2.tidyverse.org/reference/index.html)
    + 各関数と引数の意味がグラフ付きで解説されている
 
@@ -45,7 +45,7 @@ knitr::opts_chunk$set(
   + by Winston Chang
 
 
-### chunkの全体設定
+### chunkの全体設定 {-}
 
 * `fig.width`と`fig.height`でhtml上での図の大きさ一括指定
   + デフォルトは7
@@ -85,18 +85,44 @@ p +
   geom_point(color = "deepskyblue3") 
 ```
 
-### 大きさ
+### 大きさ {.tabset}
 
+#### 1.5 {-}
+```{r}
+p +
+  geom_point(size = 1.5) 
+```
 
+#### 3 {-}
 ```{r}
 p +
   geom_point(size = 3) 
 ```
 
-### 濃さ（透明度）
+#### 5 {-}
+```{r}
+p +
+  geom_point(size = 5) 
+```
+
+
+### 濃さ（透明度） {.tabset}
+#### 0.1 {-}
 ```{r}
 p +
   geom_point(alpha = 0.1) 
+```
+
+#### 0.5 {-}
+```{r}
+p +
+  geom_point(alpha = 0.5) 
+```
+
+#### 0.7 {-}
+```{r}
+p +
+  geom_point(alpha = 0.7) 
 ```
 
 
@@ -114,6 +140,7 @@ p +
 p +
   geom_point(shape = "triangle") 
 ```
+
 
 
 ## タイトルと軸: labs()
@@ -320,21 +347,21 @@ p +
 ```
 
 ### 軸の数値のサイズ {.tabset}
-#### 9
+#### 9 {-}
 ```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 9)) # 単位はpt
 ```
 
-#### 12
+#### 12 {-}
 ```{r}
 p + 
   geom_point() +
   theme(axis.text = element_text(size = 12)) # 単位はpt
 ```
 
-#### 16
+#### 16 {-}
 ```{r}
 p +
   geom_point() +
@@ -469,7 +496,7 @@ ggdraw(ppc) +
 
 ```{r}
 ggdraw(ppc) + 
-  draw_image("kujira.png", 
+  draw_image("image/kujira.png", 
              x = 0.5, y = 0.6,
              width = 0.3, height = 0.3)
 
@@ -532,10 +559,37 @@ p +
   geom_jitter()
 ```
 
-### ジッターの調整
+### ジッターの調整 {.tabset}
+
+#### 0.2 x 0.2 {-}
+```{r}
+p +
+  geom_jitter(width = 0.2, height = 0.2)
+```
+
+
+#### 0.5 x 0.5 {-}
 ```{r}
 p +
   geom_jitter(width = 0.5, height = 0.5)
+```
+
+#### 1 x 1 {-}
+```{r}
+p +
+  geom_jitter(width = 1, height = 1)
+```
+
+#### 2 x 0.5 {-}
+```{r}
+p +
+  geom_jitter(width = 2, height = 0.5)
+```
+
+#### 0.5 x 2 {-}
+```{r}
+p +
+  geom_jitter(width = 0.5, height = 2)
 ```
 
 
@@ -590,6 +644,34 @@ pc +
 pc +
   geom_point() +
   scale_color_brewer(palette = "Set2")
+```
+
+## 形分け
+
+```{r}
+ggplot(mpg, aes(displ, hwy,
+                shape = class)) +
+  geom_point()
+```
+
+
+## 画像分け
+
+* ggimageパッケージを使用
+* 区分するカテゴリをcase_whenで画像の保存先に割り当てる
+
+```{r}
+library(ggimage)
+
+mpg %>% 
+    mutate(drv_image =
+           case_when(drv == "4" ~ "image/kujira.PNG",
+                     drv == "f" ~ "image/kujira_green.PNG",
+                     drv == "r" ~ "image/kujira_orange.PNG")) %>% 
+
+ggplot(aes(displ, hwy)) +
+  geom_image(aes(image = drv_image), size = .05)
+
 ```
 
 
