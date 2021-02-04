@@ -3,8 +3,26 @@
 ## 軸の数字の表示を%に
 scale_y_continuous(scale::percent)
 
+library(tidyverse)
+
+summary(iris)
+
+iris_mean <- 
+iris %>% 
+  group_by(Species) %>% 
+  summarise(pwm = mean(Petal.Width))
+
+ggplot(iris_mean) +
+    geom_col(aes(x = Species, y = pwm))
 
 
+ggplot(iris_mean) +
+  geom_col(aes(x = Species, y = pwm)) +
+  scale_y_continuous(labels = scales::percent)
+
+ggplot(iris_mean) +
+  geom_col(aes(x = Species, y = pwm)) +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1))
 
 ## 複数グラフを1枚に
 ## 論文に出せるクオリティ
@@ -39,4 +57,7 @@ date
 
 ggplot2: Elegant Graphics for Data Analysis
 [13 Guides: legends and axes > 13.2.3 Dates: A special case](https://ggplot2-book.org/guides.html#date-scales)  
-    
+
+
+                                                             
+                                                                 

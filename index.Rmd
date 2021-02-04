@@ -141,6 +141,14 @@ p +
   geom_point(shape = "triangle") 
 ```
 
+### 画像
+```{r}
+library(ggimage)
+
+p +
+  geom_image(aes(image = "image/kujira.PNG"))
+
+```
 
 
 ## タイトルと軸: labs()
@@ -661,8 +669,6 @@ ggplot(mpg, aes(displ, hwy,
 * 区分するカテゴリをcase_whenで画像の保存先に割り当てる
 
 ```{r}
-library(ggimage)
-
 mpg %>% 
     mutate(drv_image =
            case_when(drv == "4" ~ "image/kujira.PNG",
@@ -1356,23 +1362,32 @@ pbar +
     scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
 ``` 
 
+
 #### パーセントを表示
+
+* 小数点第1位まで表示させるために`accuracy = 0.1`をつける
+  + 参考：https://stackoverflow.com/questions/59396655/how-to-always-have-fixed-number-of-decimals-in-ggplot-geom-text
+
 ```{r}
 
-# まずパーセントのデータを別途作成
-percent <-
+# まずグラフ上に表示するテキストラベルのためにパーセントのデータを別途作成
+df_pct <-
   mpg %>%
   group_by(class) %>%
   count(class, drv) %>%
-  mutate(pct = scales::percent(n/sum(n)))
+  mutate(pct_num = n/sum(n),
+         pct = scales::percent_format(accuracy = 0.1)(pct_num))
+
+# old
+# scales::percent(pct_num)
 
 # グラフ
 ggplot(mpg, aes(x = factor(class), fill = factor(drv))) +
   geom_bar(position = "fill") +
-  geom_text(data = percent,  # 上で作ったパーセントのデータ指定
+  geom_text(data = df_pct,  # 上で作ったパーセントのデータ指定
             aes(y = n, label = pct),
             position = position_fill(vjust = 0.5)) +
-    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
+    scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) # 縦軸を%表記に
 
 ```
 
@@ -1413,6 +1428,66 @@ pbar +
            position = position_dodge2(preserve = "single",
                                       pad = 0.3))
 ``` 
+
+# 円グラフ {#piechart}
+
+* カテゴリ変数1つだけで1本の棒グラフを円にしたもの
+
+## count
+```{r}
+ggplot(mpg, 
+       aes(x = factor(1), fill = class)) + 
+  geom_bar() +
+  coord_polar(theta = "y")
+```
+### 色変更
+
+* ユニバーサルカラーに
+
+```{r}
+ggplot(mpg, 
+       aes(x = factor(1), fill = class)) + 
+  geom_bar() +
+  scale_fill_brewer(palette = "Set2") +
+  coord_polar(theta = "y")
+```
+
+
+## 割合
+```{r}
+ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
+  geom_bar(position = "fill") +
+  coord_polar(theta = "y")
+```
+# ドーナツチャート
+
+* ggpubr::ggdonutchart
+
+## 基本
+```{r}
+library(ggpubr)
+
+# パーセント(%の前の部分の数字)のデータを別途作成
+percent <-
+  mpg %>%
+  count(class) %>%
+  mutate(pct = n/sum(n)*100,
+         pctp = scales::percent(n/sum(n))) # %付きの値も作成
+
+ggdonutchart(percent, "pct", label = "class",
+      fill = "class", color = "white") +
+  scale_fill_brewer(palette = "Set2")
+```
+
+## パーセント表示付き
+```{r}
+
+labs <- str_c(percent$class, " (", percent$pctp, ")")
+
+ggdonutchart(percent, "pct", label = labs,
+   fill = "class", color = "white")  +
+  scale_fill_brewer(palette = "Set2")
+```
 
 
 # ビースウォーム（蜂峰図、蜂群図）
