@@ -1440,6 +1440,7 @@ ggplot(mpg,
   geom_bar() +
   coord_polar(theta = "y")
 ```
+
 ### 色変更
 
 * ユニバーサルカラーに
@@ -1459,6 +1460,7 @@ ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
   geom_bar(position = "fill") +
   coord_polar(theta = "y")
 ```
+
 # ドーナツチャート
 
 * ggpubr::ggdonutchart
@@ -1472,7 +1474,8 @@ percent <-
   mpg %>%
   count(class) %>%
   mutate(pct = n/sum(n)*100,
-         pctp = scales::percent(n/sum(n))) # %付きの値も作成
+         pctp = scales::percent_format(accuracy = 0.1)(n/sum(n))) # %付きの値も作成
+
 
 ggdonutchart(percent, "pct", label = "class",
       fill = "class", color = "white") +
@@ -1485,7 +1488,7 @@ ggdonutchart(percent, "pct", label = "class",
 labs <- str_c(percent$class, " (", percent$pctp, ")")
 
 ggdonutchart(percent, "pct", label = labs,
-   fill = "class", color = "white")  +
+             fill = "class", color = "white")  +
   scale_fill_brewer(palette = "Set2")
 ```
 
