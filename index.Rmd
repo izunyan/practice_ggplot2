@@ -609,7 +609,8 @@ p +
 
 
 # 散布図(2): 3変数以上
-## 色分け
+## 区分
+### 色
 
 * 使用変数の説明
   + `class`: 車種
@@ -624,7 +625,7 @@ pc + geom_point()
 
 
 
-### 色を手動で指定
+#### 色を手動で指定
 ```{r}
 pc +
   geom_point() +
@@ -632,7 +633,7 @@ pc +
 ```
 
 
-#### 凡例の名前変更
+##### 凡例の名前変更
 ```{r}
 pc +
   geom_point() +
@@ -640,7 +641,7 @@ pc +
                      labels = c("二人乗り","小型","中型","ミニバン","貨物","サブコンパクト","SUV"))
 ```
 
-### 用意された色のセットを使用
+#### 用意された色のセットを使用
 
 * 詳しくは`?scale_color_brewer`
 * ユニバーサルカラーのセット例
@@ -654,7 +655,7 @@ pc +
   scale_color_brewer(palette = "Set2")
 ```
 
-## 形分け
+### 形
 
 ```{r}
 ggplot(mpg, aes(displ, hwy,
@@ -662,8 +663,27 @@ ggplot(mpg, aes(displ, hwy,
   geom_point()
 ```
 
+### テキスト
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE) # 凡例なし
+```
 
-## 画像分け
+#### 重なりをなくす
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE,
+            check_overlap = TRUE ) # 凡例なし
+```
+
+#### 斜めにする
+```{r}
+pc +
+  geom_text(aes(label = class), show.legend = FALSE,
+            angle = 45 ) # 凡例なし
+```
+
+### 画像
 
 * ggimageパッケージを使用
 * 区分するカテゴリをcase_whenで画像の保存先に割り当てる
@@ -819,25 +839,7 @@ pc +
 ```
 
 
-## 点をテキストで表示:geom_text
-```{r}
-pc +
-  geom_text(aes(label = class), show.legend = FALSE) # 凡例なし
-```
 
-### 重なりをなくす
-```{r}
-pc +
-  geom_text(aes(label = class), show.legend = FALSE,
-            check_overlap = TRUE ) # 凡例なし
-```
-
-### 斜めにする
-```{r}
-pc +
-  geom_text(aes(label = class), show.legend = FALSE,
-            angle = 45 ) # 凡例なし
-```
 
 ## 一部のデータを目立たせる
 
@@ -1298,6 +1300,7 @@ pbar +
 ## カテゴリ変数1つだけで1本の棒グラフ
 
 * 1変数だけの場合は、`x = factor(1)`と固定する
+* [円グラフ]参照
 
 ```{r}
 ggplot(mpg, 
@@ -1319,7 +1322,7 @@ ggplot(mpg,
 percent <-
   mpg %>%
   count(class) %>%
-  mutate(pct = scales::percent(n/sum(n)))
+  mutate(pct = scales::percent_format(accuracy = 0.1)(n/sum(n)))
 
 # グラフ
 ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
@@ -1327,7 +1330,7 @@ ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
   geom_text(data = percent,  # 上で作ったパーセントのデータ指定
             aes(y = n, label = pct),
             position = position_fill(vjust = 0.5)) +
-    scale_y_continuous(labels = scales::percent) +   # y軸を%表記に
+    scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +   # y軸を%表記に
     theme(axis.text.x = element_blank()) +           # x軸の1を消す
   labs(x = "class")                                  # x軸の名前をclassに
 ```
@@ -1359,7 +1362,7 @@ pbar +
 pbar +
   geom_bar(aes(fill = drv),
            position = "fill") +
-    scale_y_continuous(labels = scales::percent) # 縦軸を%表記に
+    scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) # 縦軸を%表記に
 ``` 
 
 
@@ -1431,7 +1434,7 @@ pbar +
 
 # 円グラフ {#piechart}
 
-* カテゴリ変数1つだけで1本の棒グラフを円にしたもの
+* [カテゴリ変数1つだけで1本の棒グラフ]を円にしたもの
 
 ## count
 ```{r}
@@ -1441,9 +1444,9 @@ ggplot(mpg,
   coord_polar(theta = "y")
 ```
 
-### 色変更
+### 色変更 {.tabset}
 
-* ユニバーサルカラーに
+#### ユニバーサルカラー {-}
 
 ```{r}
 ggplot(mpg, 
@@ -1451,6 +1454,16 @@ ggplot(mpg,
   geom_bar() +
   scale_fill_brewer(palette = "Set2") +
   coord_polar(theta = "y")
+```
+
+#### 背景なし{-}
+```{r}
+ggplot(mpg, 
+       aes(x = factor(1), fill = class)) + 
+  geom_bar() +
+  scale_fill_brewer(palette = "Set2") +
+  coord_polar(theta = "y") +
+  theme_classic()
 ```
 
 
@@ -1478,18 +1491,24 @@ percent <-
 
 
 ggdonutchart(percent, "pct", label = "class",
-      fill = "class", color = "white") +
-  scale_fill_brewer(palette = "Set2")
+      fill = "class", 
+      color = "white", # 区分線の色 
+      lab.pos = "in", 
+      lab.font = c(3, "white")) + # ラベルの文字サイズ、色
+    scale_fill_brewer(palette = "Set2")
 ```
 
-## パーセント表示付き
-```{r}
+## （※修正中）パーセント表示付き
 
-labs <- str_c(percent$class, " (", percent$pctp, ")")
+```{r eval=FALSE, include=FALSE}
+# ラベルと一致しないので要修正
+labs <- percent$class
 
 ggdonutchart(percent, "pct", label = labs,
              fill = "class", color = "white")  +
-  scale_fill_brewer(palette = "Set2")
+  scale_fill_brewer(palette = "Set2") #+
+ # geom_text(aes(label = percent$pctp),
+ #            position = position_stack(vjust = 0.5))
 ```
 
 
