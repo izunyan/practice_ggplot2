@@ -80,6 +80,9 @@ p + geom_point()
 
 ## 点の書式
 ### 色
+
+* [Rの色見本](http://www.okadajp.org/RWiki/?%E8%89%B2%E8%A6%8B%E6%9C%AC)
+
 ```{r}
 p +
   geom_point(color = "deepskyblue3") 
@@ -609,7 +612,7 @@ p +
 
 
 # 散布図(2): 3変数以上
-## 区分
+## カテゴリ
 ### 色
 
 * 使用変数の説明
@@ -700,7 +703,23 @@ ggplot(aes(displ, hwy)) +
 
 ```
 
+## 数値
+### 大きさ
+```{r}
+p + 
+  geom_point(aes(size = cty)) 
+```
 
+### 濃さ
+```{r}
+p + 
+  geom_point(aes(alpha = cty)) 
+```
+### 大きさと濃さ
+```{r}
+p + 
+  geom_point(aes(size = cty, alpha = cty)) 
+```
 
 ## 凡例の調整
 ### 凡例の位置
