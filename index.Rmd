@@ -211,11 +211,11 @@ p +
   )
 ```
 
-### フォント(タイトル) {.tabset}
+#### フォント {.tabset}
 
 * 以下はwindowsでのやり方を想定
 
-#### MS明朝 {-}
+##### MS明朝 {-}
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
@@ -227,7 +227,7 @@ p +
 
 ```
 
-#### メイリオ {-}
+##### メイリオ {-}
 ```{r}
 windowsFonts("MEI" = windowsFont("Meiryo"))
 
@@ -239,7 +239,7 @@ p +
 
 ```
 
-#### Times New Roman {-}
+##### Times New Roman {-}
 ```{r}
 p +
   geom_point() +
@@ -248,7 +248,7 @@ p +
                                   size = 20))
 ```
 
-#### Arial {-}
+##### Arial {-}
 ```{r}
 p +
   geom_point() +
@@ -257,7 +257,7 @@ p +
                                   size = 20))
 ```
 
-#### Courier New {-}
+##### Courier New {-}
 ```{r}
 p +
   geom_point() +
@@ -266,7 +266,8 @@ p +
                                   size = 20))
 ```
 
-### 軸の名前
+### 軸
+#### 名前
 
 * 名前を消したいときは `x = ""`のようにしてもできる
 
@@ -280,8 +281,7 @@ p +
 ```
 
 
-### フォント(軸)
-#### 数値
+#### 数値の書式
 
 ```{r}
 p +
@@ -295,7 +295,7 @@ p +
                                   size = 15))
 ```
 
-#### タイトル（軸の名前）
+#### 名前の書式
 
 ```{r}
 p +
@@ -309,30 +309,19 @@ p +
                                    size = 15))
 ```
 
-### フォント(一括)
-```{r}
-p +
-  geom_point() +
-  labs(
-    title = "Title タイトル　たいとる　題名",
-    x = "hwy_x軸の名前",
-    y = "displ_y軸の名前"
-       ) +
-  theme(text =  element_text(family = "serif",
-                                  size = 15))
-```
 
 
 
-### 軸の数値範囲: scale_continuous()  
-#### 数値範囲確認
+
+#### 数値範囲: scale_continuous()  
+##### 範囲確認
 ```{r}
 mpg %>% 
   select(displ, hwy) %>% # displとhwyを選んでsummary()に渡す
   summary()
 ```
 
-#### 範囲を指定して１ずつ増やす
+##### 範囲を指定して１ずつ増やす
 
 * 数値型の場合は、`scale_x_continuous()`および`scale_y_continuous()`のbreaksで指定
 * 表示範囲を強制指定する場合は`limits =` 
@@ -349,7 +338,7 @@ p +
 ```
 
 
-##### 手動で指定
+###### 手動で指定
 ```{r}
 p +
   geom_point() +
@@ -357,27 +346,40 @@ p +
     breaks = c(15, 30, 45))       
 ```
 
-### 軸の数値のサイズ {.tabset}
-#### 9 {-}
+#### 軸の数値のサイズ {.tabset}
+##### 9 {-}
 ```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 9)) # 単位はpt
 ```
 
-#### 12 {-}
+##### 12 {-}
 ```{r}
 p + 
   geom_point() +
   theme(axis.text = element_text(size = 12)) # 単位はpt
 ```
 
-#### 16 {-}
+##### 16 {-}
 ```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 16)) # 単位はpt
 
+```
+
+### タイトルと軸のフォント(一括)
+```{r}
+p +
+  geom_point() +
+  labs(
+    title = "Title タイトル　たいとる　題名",
+    x = "hwy_x軸の名前",
+    y = "displ_y軸の名前"
+       ) +
+  theme(text =  element_text(family = "serif",
+                                  size = 15))
 ```
 
 
@@ -908,6 +910,41 @@ pc +
              ncol = 2)
 ```
 
+### ファセットラベル
+#### 文字サイズ変更 {.tabset}
+##### 6 {-}
+```{r}
+pc +
+   geom_point() +
+   facet_wrap(vars(class)) +
+  theme(strip.text = element_text(size = 6))
+```
+
+##### 8 {-}
+```{r}
+pc +
+   geom_point() +
+   facet_wrap(vars(class)) +
+  theme(strip.text = element_text(size = 8))
+```
+
+##### 10 {-}
+```{r}
+pc +
+   geom_point() +
+   facet_wrap(vars(class)) +
+  theme(strip.text = element_text(size = 10))
+```
+
+#### 背景と線の色変更
+```{r}
+pc +
+   geom_point() +
+   facet_wrap(vars(class)) +
+  theme(strip.background = element_rect(colour = "black", fill = "white"))
+```
+
+
 ### グラフ外にテキストを追加
 ```{r}
 library(cowplot)
@@ -1119,6 +1156,27 @@ pb  + geom_col(aes(fill = class))
 pb  + geom_col(color = "red")
 ```
 
+
+### パターン
+
+* https://coolbutuseless.github.io/package/ggpattern/index.html
+
+```{r}
+library(ggpattern)
+
+pb +
+  geom_col_pattern(
+    aes(pattern = class, pattern_angle = class, pattern_spacing = class),
+    fill            = 'white',
+    colour          = 'black',
+    pattern_spacing = 0.025,
+    # pattern_density = 0.4,
+    # pattern_fill    = 'black',
+    # pattern_colour  = 'black'
+  )
+```
+
+
 ### 幅
 
 * デフォルトは0.9
@@ -1152,7 +1210,10 @@ hwy_class_y_99 %>%
 
 ```
 
-### 軸のラベルの向き
+### 軸のラベルの角度を
+
+* 斜めにする
+
 ```{r}
 pb  + 
   geom_col() +
@@ -1573,6 +1634,35 @@ pch +
   geom_violindot(aes(fill = class),
                      size_dots = 5) # ドットサイズ変更
 ```
+
+# モザイクプロット
+
+* 因子型の変数が必要
+
+## 1変数
+```{r}
+library(ggmosaic)
+
+mpg %>% 
+  mutate(cyl = factor(cyl)) %>% # 変数を因子型に
+ggplot() +
+  geom_mosaic(aes(x = product(cyl),
+                  fill = cyl))
+```
+
+
+
+## 2変数
+```{r}
+
+mpg %>% 
+  mutate(drv = factor(drv),
+         class = factor(class)) %>% # 変数を因子型に
+ggplot() +
+  geom_mosaic(aes(x = product(drv,class),
+                  fill = drv))
+```
+
 
 # 複数のグラフを1枚にまとめる
 
