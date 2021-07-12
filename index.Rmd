@@ -211,11 +211,12 @@ p +
   )
 ```
 
-#### フォント {.tabset}
+## タイトルのフォント
+### フォント {.tabset}
 
 * 以下はwindowsでのやり方を想定
 
-##### MS明朝 {-}
+#### MS明朝 {-}
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
@@ -227,7 +228,7 @@ p +
 
 ```
 
-##### メイリオ {-}
+#### メイリオ {-}
 ```{r}
 windowsFonts("MEI" = windowsFont("Meiryo"))
 
@@ -239,7 +240,7 @@ p +
 
 ```
 
-##### Times New Roman {-}
+#### Times New Roman {-}
 ```{r}
 p +
   geom_point() +
@@ -248,7 +249,7 @@ p +
                                   size = 20))
 ```
 
-##### Arial {-}
+#### Arial {-}
 ```{r}
 p +
   geom_point() +
@@ -257,7 +258,7 @@ p +
                                   size = 20))
 ```
 
-##### Courier New {-}
+#### Courier New {-}
 ```{r}
 p +
   geom_point() +
@@ -1153,7 +1154,7 @@ pb  + geom_col(aes(fill = class))
 * `color =`だと枠線の色に
 
 ```{r}
-pb  + geom_col(color = "red")
+pb  + geom_col(color = "yellow")
 ```
 
 
