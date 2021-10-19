@@ -154,8 +154,8 @@ p +
 ```
 
 
-## タイトルと軸: labs()
-### タイトル {.tabset}
+## タイトル: labs()
+### タイトルの見ばえ {.tabset}
 ```{r}
 p +
   geom_point() +
@@ -211,12 +211,11 @@ p +
   )
 ```
 
-### タイトルのフォント
-#### フォント {.tabset}
+### フォント {.tabset}
 
 * 以下はwindowsでのやり方を想定
 
-##### MS明朝 {-}
+#### MS明朝 {-}
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
@@ -228,7 +227,7 @@ p +
 
 ```
 
-##### メイリオ {-}
+#### メイリオ {-}
 ```{r}
 windowsFonts("MEI" = windowsFont("Meiryo"))
 
@@ -240,7 +239,7 @@ p +
 
 ```
 
-##### Times New Roman {-}
+#### Times New Roman {-}
 ```{r}
 p +
   geom_point() +
@@ -249,7 +248,7 @@ p +
                                   size = 20))
 ```
 
-##### Arial {-}
+#### Arial {-}
 ```{r}
 p +
   geom_point() +
@@ -258,7 +257,7 @@ p +
                                   size = 20))
 ```
 
-##### Courier New {-}
+#### Courier New {-}
 ```{r}
 p +
   geom_point() +
@@ -267,8 +266,8 @@ p +
                                   size = 20))
 ```
 
-### 軸
-#### 名前
+## 軸
+### 名前
 
 * 名前を消したいときは `x = ""`のようにしてもできる
 
@@ -282,7 +281,7 @@ p +
 ```
 
 
-#### 数値の書式
+### 数値の書式
 
 ```{r}
 p +
@@ -296,7 +295,7 @@ p +
                                   size = 15))
 ```
 
-#### 名前の書式
+### 名前の書式
 
 ```{r}
 p +
@@ -314,15 +313,15 @@ p +
 
 
 
-#### 数値範囲: scale_continuous()  
-##### 範囲確認
+### 数値範囲: scale_continuous()  
+#### 範囲確認
 ```{r}
 mpg %>% 
   select(displ, hwy) %>% # displとhwyを選んでsummary()に渡す
   summary()
 ```
 
-##### 範囲を指定して１ずつ増やす
+#### 範囲を指定して１ずつ増やす
 
 * 数値型の場合は、`scale_x_continuous()`および`scale_y_continuous()`のbreaksで指定
 * 表示範囲を強制指定する場合は`limits =` 
@@ -339,7 +338,7 @@ p +
 ```
 
 
-###### 手動で指定
+##### 手動で指定
 ```{r}
 p +
   geom_point() +
@@ -347,22 +346,22 @@ p +
     breaks = c(15, 30, 45))       
 ```
 
-#### 軸の数値のサイズ {.tabset}
-##### 9 {-}
+### 軸の数値のサイズ {.tabset}
+#### 9 {-}
 ```{r}
 p +
   geom_point() +
   theme(axis.text = element_text(size = 9)) # 単位はpt
 ```
 
-##### 12 {-}
+#### 12 {-}
 ```{r}
 p + 
   geom_point() +
   theme(axis.text = element_text(size = 12)) # 単位はpt
 ```
 
-##### 16 {-}
+#### 16 {-}
 ```{r}
 p +
   geom_point() +
