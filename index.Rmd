@@ -717,6 +717,7 @@ p +
 p + 
   geom_point(aes(alpha = cty)) 
 ```
+
 ### 大きさと濃さ
 ```{r}
 p + 
@@ -733,12 +734,30 @@ pc +
 ```
 
 ### 凡例を消す
+
+* guidesについての説明
+  + https://ggplot2.tidyverse.org/reference/guides.html
+
 ```{r}
 pc +
  geom_point() +
  theme(legend.position = "none")
 
+# こちらでも同じだが，複数凡例がある場合は消したいものを選択できる
+# pc +
+#   geom_point() +
+#   guides(color = "none" )
+
 ```
+
+#### 複数凡例がある場合に残したいものを選択する
+```{r}
+ggplot(mpg, aes(displ, hwy,
+                color = class,  size = cty)) +
+  geom_point() +
+  guides(color = "none")
+```
+
 
 ### 凡例をグラフ中に
 
