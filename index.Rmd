@@ -144,12 +144,11 @@ p +
   geom_point(shape = "triangle") 
 ```
 
-### 画像
+### 画像: ggimage
 ```{r}
-library(ggimage)
 
 p +
-  geom_image(aes(image = "image/kujira.PNG"))
+  ggimage::geom_image(aes(image = "image/kujira.PNG"))
 
 ```
 
@@ -556,13 +555,13 @@ p +
 ### theme_modern {-}
 
 * 全体的に見やすくなるテンプレート
+* seeパッケージに入っている
 
 ```{r}
-library(see)
 
 p + 
   geom_point() +
-  theme_modern()
+  see::theme_modern()
 ```
 
 
@@ -701,7 +700,7 @@ mpg %>%
                      drv == "r" ~ "image/kujira_orange.PNG")) %>% 
 
 ggplot(aes(displ, hwy)) +
-  geom_image(aes(image = drv_image), size = .05)
+  ggimage::geom_image(aes(image = drv_image), size = .05)
 
 ```
 
@@ -1010,6 +1009,37 @@ pc +
    facet_grid(vars(cyl),vars(class))
 ```
 
+# 散布図行列
+## GGally::ggpairs()
+### 数値変数のみ
+```{r}
+mpg |> 
+  select(where(is.numeric)) |> # 数値変数だけに
+  GGally::ggpairs()
+```
+
+#### 背景のテンプレ変更
+```{r}
+mpg |> 
+  select(drv, where(is.numeric)) |>
+  GGally::ggpairs() +
+  theme_bw()
+```
+
+
+### カテゴリも含む
+```{r}
+mpg |> 
+  select(drv, where(is.numeric)) |>
+  GGally::ggpairs()
+```
+
+### 層別に
+```{r}
+mpg |> 
+  select(drv, where(is.numeric)) |>
+  GGally::ggpairs(aes(color = drv))
+```
 
 
 # 折れ線グラフ:geom_line()
@@ -1157,7 +1187,7 @@ ggplot(mpg) +
 
 
 
-## 車種ごと
+## カテゴリ変数の水準ごと
 ```{r}
 ggplot(mpg) + 
   geom_histogram(aes(hwy)) + 
@@ -1621,7 +1651,6 @@ ggplot(mpg, aes(x = factor(1), fill = factor(class))) +
 
 ## 基本
 ```{r}
-library(ggpubr)
 
 # パーセント(%の前の部分の数字)のデータを別途作成
 percent <-
@@ -1631,7 +1660,7 @@ percent <-
          pctp = scales::percent_format(accuracy = 0.1)(n/sum(n))) # %付きの値も作成
 
 
-ggdonutchart(percent, "pct", label = "class",
+ggpubr::ggdonutchart(percent, "pct", label = "class",
       fill = "class", 
       color = "white", # 区分線の色 
       lab.pos = "in", 
@@ -1645,7 +1674,7 @@ ggdonutchart(percent, "pct", label = "class",
 # ラベルと一致しないので要修正
 labs <- percent$class
 
-ggdonutchart(percent, "pct", label = labs,
+ggpubr::ggdonutchart(percent, "pct", label = labs,
              fill = "class", color = "white")  +
   scale_fill_brewer(palette = "Set2") #+
  # geom_text(aes(label = percent$pctp),
@@ -1692,7 +1721,7 @@ pch + geom_violin(aes(fill = class),
 
 ```{r}
 pch + 
-  geom_violindot(aes(fill = class),
+  see::geom_violindot(aes(fill = class),
                      size_dots = 5) # ドットサイズ変更
 ```
 
@@ -1730,9 +1759,9 @@ ggplot() +
 * 色々なやり方があるけどまずは基本的な所から（徐々に拡充予定）
 * 参考：https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
 
-## 一行または一列
+## gridExtra
+### 一行または一列
 ```{r} 
-library(gridExtra)
 
 p1 <- p + geom_point() 
 p2 <-
@@ -1743,15 +1772,15 @@ p2 <-
          legend.background = element_blank()) # 凡例のボックス背景を透明に
   
  
-grid.arrange(p1, p2, nrow = 1) # 1行に
+gridExtra::grid.arrange(p1, p2, nrow = 1) # 1行に
 
-grid.arrange(p1, p2, ncol = 1) # 1列に
+gridExtra::grid.arrange(p1, p2, ncol = 1) # 1列に
 
 
 ```
 
 
-## 四等分（2x2）
+### 四等分（2x2）
 ```{r}
 p3 <- 
 pc +
@@ -1759,10 +1788,26 @@ pc +
    facet_wrap(vars(class)) +
  theme(legend.position = "none") # 凡例を消す
 
-grid.arrange(p1, p2, p3, ncol = 2) # 2列に
+gridExtra::grid.arrange(p1, p2, p3, ncol = 2) # 2列に
 
 
 ```
+
+## patchwork
+
+* https://patchwork.data-imaginist.com/index.html
+
+```{r}
+library(patchwork)
+
+p1 + p2
+
+(p1 | p2)/p3
+
+
+```
+
+
 
 
 
