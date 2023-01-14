@@ -1194,6 +1194,67 @@ ggplot(mpg) +
   facet_grid(vars(class))
 ```
 
+# 箱ひげ図
+```{r}
+ggplot(mpg) +
+  geom_boxplot(aes(x = class, y = hwy, color = class), fill = NA)
+  
+```
+## 平均値もプロット
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+  geom_boxplot( fill = NA) +
+  stat_summary(fun = "mean", geom = "point", shape = 23, size = 3, fill = "white")
+  
+```
+
+
+## 個別の値も表示
+### jitter
+
+* 個別の値を示す場合は, `outlier.shape = NA`で外れ値表示を解除する
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+  geom_boxplot( fill = NA, outlier.shape = NA) +
+  geom_jitter(width = 0.2, alpha = 0.2)
+```
+### ビースウォーム（蜂峰図、蜂群図）
+
+* `ggbeeswarm`パッケージを使う（ここだけで使うので`ggbeeswarm::`をつける）
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+  geom_boxplot(fill = NA, outlier.shape = NA) +
+  ggbeeswarm::geom_beeswarm(alpha = 0.2)
+```
+# バイオリンプロット
+
+## デフォルトの図
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+  geom_violin(aes(fill = class))  # 色分けに指定する変数
+```
+
+### 濃さ（透明度）
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+ geom_violin(aes(fill = class),
+                  alpha = 0.5)
+```
+
+
+# ハーフバイオリン・ハーフドットプロット
+## デフォルトの図
+
+* `see`パッケージの`geom_violindot()`を使う
+* ドットサイズのデフォルトが0.7なのでここだけ大きくした
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy, color = class)) +
+  see::geom_violindot(aes(fill = class),
+                     size_dots = 5) # ドットサイズ変更
+```
 
 # 棒グラフ(要約値から作る):geom_col()
 
@@ -1682,48 +1743,10 @@ ggpubr::ggdonutchart(percent, "pct", label = labs,
 ```
 
 
-# ビースウォーム（蜂峰図、蜂群図）
-
-* `ggbeeswarm`パッケージを使う（ここだけで使うので`ggbeeswarm::`をつける）
-
-## デフォルトの図
-```{r}
-pch <- 
-ggplot(mpg, aes(class, hwy))
 
 
-pch + 
-  ggbeeswarm::geom_beeswarm(aes(color = class)) # 色分けに指定する変数
-
-```
 
 
-# バイオリンプロット
-
-## デフォルトの図
-```{r}
-pch + 
-  geom_violin(aes(fill = class))  # 色分けに指定する変数
-```
-
-### 濃さ（透明度）
-```{r}
-pch + geom_violin(aes(fill = class),
-                  alpha = 0.5)
-```
-
-
-# ハーフバイオリン・ハーフドットプロット
-## デフォルトの図
-
-* `see`パッケージの`geom_violindot()`を使う
-* ドットサイズのデフォルトが0.7なのでここだけ大きくした
-
-```{r}
-pch + 
-  see::geom_violindot(aes(fill = class),
-                     size_dots = 5) # ドットサイズ変更
-```
 
 # モザイクプロット
 
@@ -1827,3 +1850,24 @@ pch +
                stackdir = "center")  # 点をセンター並びに
 ```
 
+# 色
+## ユニバーサルカラー
+```{r}
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly= TRUE)
+```
+
+
+## 色を増やす
+```{r}
+# デフォルトではPairedは12色のみ
+many_col <- brewer.pal(12, "Paired")
+many_col
+
+# 20色まで増やす
+many_col <- colorRampPalette(many_col)(20)
+many_col
+
+pie(rep(1, length(many_col)), col = many_col, main = "")
+
+```
