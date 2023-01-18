@@ -1194,12 +1194,14 @@ ggplot(mpg) +
   facet_grid(vars(class))
 ```
 
+
 # 箱ひげ図
 ```{r}
 ggplot(mpg) +
   geom_boxplot(aes(x = class, y = hwy, color = class), fill = NA)
   
 ```
+
 ## 平均値もプロット
 ```{r}
 ggplot(mpg, aes(x = class, y = hwy, color = class)) +
@@ -1219,6 +1221,7 @@ ggplot(mpg, aes(x = class, y = hwy, color = class)) +
   geom_boxplot( fill = NA, outlier.shape = NA) +
   geom_jitter(width = 0.2, alpha = 0.2)
 ```
+
 ### ビースウォーム（蜂峰図、蜂群図）
 
 * `ggbeeswarm`パッケージを使う（ここだけで使うので`ggbeeswarm::`をつける）
@@ -1228,6 +1231,7 @@ ggplot(mpg, aes(x = class, y = hwy, color = class)) +
   geom_boxplot(fill = NA, outlier.shape = NA) +
   ggbeeswarm::geom_beeswarm(alpha = 0.2)
 ```
+
 # バイオリンプロット
 
 ## デフォルトの図
