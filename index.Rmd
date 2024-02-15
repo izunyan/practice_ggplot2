@@ -210,11 +210,47 @@ p +
   )
 ```
 
-### フォント {.tabset}
+### フォント
 
 * 以下はwindowsでのやり方を想定
 
-#### MS明朝 {-}
+
+
+#### 確認
+```{r}
+windowsFonts()
+```
+
+#### フォント例 {.tabset}
+
+##### Times New Roman {-}
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "serif",
+                                  size = 20))
+```
+
+##### Arial {-}
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "sans",
+                                  size = 20))
+```
+
+##### Courier New {-}
+```{r}
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "mono",
+                                  size = 20))
+```
+
+##### MS明朝 {-}
 ```{r}
 windowsFonts("mincho" = windowsFont("MS Mincho"))
 
@@ -226,7 +262,20 @@ p +
 
 ```
 
-#### メイリオ {-}
+##### MSゴシック {-}
+```{r}
+windowsFonts("gothic" = windowsFont("MS Goshic"))
+
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "gothic",
+                                  size = 20))
+
+```
+
+
+##### メイリオ {-}
 ```{r}
 windowsFonts("MEI" = windowsFont("Meiryo"))
 
@@ -238,32 +287,7 @@ p +
 
 ```
 
-#### Times New Roman {-}
-```{r}
-p +
-  geom_point() +
-  labs(title = "Title タイトル　たいとる　題名") +
-  theme(plot.title = element_text(family = "serif",
-                                  size = 20))
-```
 
-#### Arial {-}
-```{r}
-p +
-  geom_point() +
-  labs(title = "Title タイトル　たいとる　題名") +
-  theme(plot.title = element_text(family = "sans",
-                                  size = 20))
-```
-
-#### Courier New {-}
-```{r}
-p +
-  geom_point() +
-  labs(title = "Title タイトル　たいとる　題名") +
-  theme(plot.title = element_text(family = "mono",
-                                  size = 20))
-```
 
 ## 軸
 ### 名前
