@@ -289,6 +289,61 @@ p +
 
 
 
+##### 游ゴシック {-}
+```{r}
+windowsFonts("YuGothic" = windowsFont("Yu Gothic"))
+
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "YuGothic",
+                                  size = 20))
+
+```
+
+##### 游明朝 {-}
+```{r}
+windowsFonts("YuMincho" = windowsFont("Yu Mincho"))
+
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "YuMincho",
+                                  size = 20))
+
+```
+
+#### 画像保存時にフォントも反映させる
+
+
+* 普通に保存するだけでは変更されない
+ 
+```{r}
+p_yugothic <- 
+p +
+  geom_point() +
+  labs(title = "Title タイトル　たいとる　題名") +
+  theme(plot.title = element_text(family = "YuGothic",
+                                  size = 20))
+
+ggsave("image/p_yugothic_failed.png")
+
+```
+
+![](image/p_yugothic_failed.png)
+
+
+* 解決策
+  + 引数に`device = grDevices::png`を入れる
+  + 参考：https://github.com/tidyverse/ggplot2/issues/4501#issuecomment-910831235
+
+```{r}
+ggsave("image/p_yugothic.png", device = grDevices::png)
+```
+
+![](image/p_yugothic.png)
+
+
 ## 軸
 ### 名前
 
