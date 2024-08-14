@@ -71,7 +71,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
 library(tidyverse)
 ```
 
-```{r}
+```{r point1}
 p <- 
 ggplot(mpg, aes(x = displ, y = hwy))
 
@@ -461,6 +461,29 @@ p +
 ```
 
 
+### 軸の名前を消す
+```{r}
+p +
+  geom_point() +
+  theme(axis.title = element_blank())
+
+# こちらでもできる
+# p +
+#   geom_point() +
+#   labs(x = "",
+#        y = "")
+
+
+```
+
+### 軸の数値と線を消す
+```{r}
+p +
+  geom_point() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+```
+
 ## グラフ中に線やテキストを追加
 ### 横線: geom_hline()
 ```{r}
@@ -472,6 +495,18 @@ p +
              size = 1)            # 大きさ
 
 ```
+
+#### 複数本
+```{r}
+p + 
+  geom_point() +
+  geom_hline(yintercept = c(20,30),     # 座標の位置
+             linetype = "dotted", # 点線
+             color = "red",       # 色
+             size = 1)            # 大きさ
+
+```
+
 
 ### 縦線:geom_vline()
 ```{r}
@@ -631,6 +666,14 @@ p +
   theme_classic()
 ```
 
+### theme_void {-}
+```{r}
+p +
+  geom_point() +
+  theme_void()
+```
+
+
 ### theme_modern {-}
 
 * 全体的に見やすくなるテンプレート
@@ -698,7 +741,7 @@ p +
 * 使用変数の説明
   + `class`: 車種
 
-```{r}
+```{r point2}
 pc <- 
 ggplot(mpg, aes(displ, hwy,
                 color = class)) # 色分けに使用する変数指定
@@ -1091,7 +1134,7 @@ pc +
 # 散布図行列
 ## GGally::ggpairs()
 ### 数値変数のみ
-```{r}
+```{r ggpair}
 mpg |> 
   select(where(is.numeric)) |> # 数値変数だけに
   GGally::ggpairs()
@@ -1240,7 +1283,7 @@ ds +
 
 * こちらも参照 https://izunyan.github.io/practice_bfi/#84_%E3%83%92%E3%82%B9%E3%83%88%E3%82%B0%E3%83%A9%E3%83%A0%EF%BC%88%E3%82%AB%E3%82%A6%E3%83%B3%E3%83%88%E6%95%B0%E3%83%A9%E3%83%99%E3%83%AB%E4%BB%98%E3%81%8D%EF%BC%89
 
-```{r}
+```{r hist}
 ggplot(mpg) + 
   geom_histogram(aes(hwy))
 ```
@@ -1344,7 +1387,7 @@ ggplot(mpg, aes(x = class, y = hwy, color = class)) +
 * [折れ線グラフ:geom_line()]の時と同一データを使用
   + 1999年データに限定
 
-```{r}
+```{r bar1}
 # 【再掲】車種(class)と年次別の燃料効率(hwy)平均値データを作成
 hwy_class_y <- 
 mpg %>% 
@@ -1553,7 +1596,7 @@ pb  +
   + yearの限定なし
 
 ## デフォルトの図
-```{r}
+```{r bar2}
 
 pby <- 
    ggplot(hwy_class_y, 
@@ -1574,7 +1617,7 @@ pby +
 
 ## 値ラベル
 ### 値ラベルを表示
-```{r}
+```{r bar3}
 pby + 
   geom_col(position = "dodge") +
   geom_text(aes(label = round(mean_hwy, 1)), 
@@ -1752,7 +1795,7 @@ pbar +
 * [カテゴリ変数1つだけで1本の棒グラフ]を円にしたもの
 
 ## count
-```{r}
+```{r pie}
 ggplot(mpg, 
        aes(x = factor(1), fill = class)) + 
   geom_bar() +
